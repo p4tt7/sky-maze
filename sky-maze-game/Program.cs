@@ -6,6 +6,7 @@ class Program
     public static void Main()
     {
         GameUI.Start();
-        GameLogic.MainMenu(); 
+        GameLogic gameLogic = new GameLogic(); 
+        gameLogic.MainMenu();
     }
 }
