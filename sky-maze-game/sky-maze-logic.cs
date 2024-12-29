@@ -120,7 +120,7 @@ public class Board
         {
             for (int j = 0; j < column; j++)
             {
-                Console.Write(board[i, j] == 1 ? "☁️" : " "); 
+                Console.Write(board[i, j] == 1 ? "0" : " "); 
             }
             Console.WriteLine();
 
