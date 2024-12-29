@@ -1,6 +1,9 @@
 namespace sky_maze_game.GameUI;
 
-public static class GameUI
+using System.Data;
+using sky_maze_game.GameLogic;
+
+public class GameUI
 {
     public static void Start(){
         Console.WriteLine(
@@ -21,6 +24,20 @@ public static class GameUI
             
         Console.WriteLine("1- COMENZAR\n" + "0- SALIR");
     }
+
+
+//    public class Maze{
+//        string tramp_1 = "⛈️";
+//        string tramp_2 = "❄️";
+//        string tramp_3 = "🌪️";
+//        string walls = "☁️";
+//        string obstacule_1 = "🌧️";
+//        string obstacule_2 = "🌫️";
+//        string winning_position = "🌞";
+//    }
+//    public static void Maze(){
+//
+//    }
 }
 
 

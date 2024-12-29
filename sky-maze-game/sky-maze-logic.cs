@@ -24,20 +24,12 @@ public class GameLogic{
         }
     }
 
-    public int Dimension(){
-        Console.WriteLine("Ingrese las dimensiones deseadas:");
-        int n = int.Parse(Console.ReadLine());
-        if(n<0){
-            throw new Exception("Dimension invalida. Ingrese un numero mayor que 0");
-        }
-        return n;
-    }
-
     public void Game()
     {     
-        int n = Dimension();
-        Board board = new Board(n); 
-        board.BoardGenerator(); 
+        int rows = 5;  
+        int columns = 5;  
+        Board board = new Board(rows, columns); 
+        board.BoardGenerator(0, 0);  
         board.PrintBoard();
     }
 }
@@ -45,33 +37,137 @@ public class GameLogic{
 public class Board
 {
     int[,] board;
-    int n;
+    public enum WallorWalk{
+        wall = 1, walk = 0
 
-
-    public Board(int n)
-    {
-        this.n=n;
-        board = new int[n, n];
     }
 
-    public void BoardGenerator()
+    int row, column;
+    int[] directions;
+    Random rand = new Random();
+
+    public  Board(int row, int column)
     {
-       for(int i=0; i<n;i++){
-            for(int j=0;j<n;j++){
-                board[i,j] = 0;
+        this.row = row;
+        this.column = column;
+        board = new int[row, column];
+        directions = [1,-1,0,0];
+        for(int i=0; i<row;i++){
+            for(int j=0; j<column; j++){
+                if(i%2==0){
+                    if(j==0 || j==column-1){
+                        board[i,j] = 0;
+                    }
+                    else{
+                        board[i,j]=1;
+                    }
+                    
+                }
+                else{
+                    board[i,j]=1;
+                }
+            }
+        }
+
+    }
+
+    public void BoardGenerator(int x, int y)
+    {
+        for(int i=0; i<row;i++){
+            for(int j=0; j<column; j++){
+                if(board[i,j]==0){
+                    WalkGenerator(x,y);
+                }
+            }
+        }     
+    }
+
+    public void WalkGenerator(int first_row, int first_column){
+        List<int[]> directions = new List<int[]>() {
+            new int[] { 0, 1 },  // derecha
+            new int[] { 1, 0 },  // abajo
+            new int[] { 0, -1 }, // izquierda
+            new int[] { -1, 0 }  // arriba
+        };
+
+        Random rand = new Random();
+        int x = first_row;
+        int y = first_column;
+
+         for (int step = 0; step < 50; step++) 
+        {
+            var direction = directions[rand.Next(directions.Count)]; 
+            int newX = x + direction[0];
+            int newY = y + direction[1];
+
+            if (ValidMove(newX, newY))
+            {
+                board[newX, newY] = 0; 
+                x = newX;  
+                y = newY;
             }
         }
     }
 
-    public void PrintBoard()
+    public bool ValidMove(int x, int y)
     {
-        for (int i = 0; i < n; i++)
+        return x >= 0 && x < row && y >= 0 && y < column && board[x, y] == 1;
+    }
+
+        public void PrintBoard()
+    {  
+        for (int i = 0; i < row; i++)
         {
-            for (int j = 0; j < n; j++)
+            for (int j = 0; j < column; j++)
             {
-                Console.Write(board[i, j] + " "); 
+                Console.Write(board[i, j] == 1 ? "☁️" : " "); 
             }
             Console.WriteLine();
+
         }
     }
+
+    //esto esta mal cambialo todo
+
+
+ //    static int[,] IsRecheable(int[,] board, int first_row, int first_column){ //algoritmo de lee
+ //        int rows = board.GetLength(0); //marcar cantidad de filas y columnas 
+ //        int columns = board.GetLength(1);
+ //        int[,] distance = new int[rows,columns]; //nuevo array para añadir las distancias
+ //        distance[first_row , first_column] = 1; //celda inicial
+ //
+ //    }
+
 }
+
+
+
+//public class Fichas{
+//    string 
+//    string 
+//    string 
+//    string 
+//    string 
+//    string 
+//    string 
+
+//
+//}
+//
+//public class Player{
+
+
+
+//}
+
+//public class Obstacules{
+
+
+
+//}
+
+//public class Tramps{
+
+
+//}
+

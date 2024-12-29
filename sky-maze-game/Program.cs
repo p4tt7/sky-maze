@@ -8,5 +8,6 @@ class Program
         GameUI.Start();
         GameLogic gameLogic = new GameLogic(); 
         gameLogic.MainMenu();
+  
     }
 }
