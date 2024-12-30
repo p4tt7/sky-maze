@@ -1,7 +1,5 @@
 namespace sky_maze_game.GameUI;
 
-using System.Data;
-using sky_maze_game.GameLogic;
 
 public class GameUI
 {

@@ -25,11 +25,10 @@ public class GameLogic{
     }
 
     public void Game()
-    {     
-        int rows = 5;  
-        int columns = 5;  
-        Board board = new Board(rows, columns); 
-        board.BoardGenerator(0, 0);  
+    {  
+        Board board = new Board(10, 10);   
+        board.InitializeBoard();
+        board.BoardGenerator();
         board.PrintBoard();
     }
 }
@@ -37,52 +36,36 @@ public class GameLogic{
 public class Board
 {
     int[,] board;
-    public enum WallorWalk{
-        wall = 1, walk = 0
-
-    }
 
     int row, column;
     int[] directions;
     Random rand = new Random();
 
-    public  Board(int row, int column)
+
+    public Board(int row, int column)
     {
         this.row = row;
         this.column = column;
         board = new int[row, column];
-        directions = [1,-1,0,0];
-        for(int i=0; i<row;i++){
-            for(int j=0; j<column; j++){
-                if(i%2==0){
-                    if(j==0 || j==column-1){
-                        board[i,j] = 0;
-                    }
-                    else{
-                        board[i,j]=1;
-                    }
-                    
-                }
-                else{
+    }
+
+    public void InitializeBoard()
+    {
+        board[0,0]=-1;
+        board[row-1, column-1]=-1;
+        for(int i = 0; i<row; i++)
+        {
+            for(int j=0; j<column; j++)
+            { 
+                if(board[i,j]!=-1){
                     board[i,j]=1;
                 }
-            }
+            }    
         }
-
     }
 
-    public void BoardGenerator(int x, int y)
+    public void BoardGenerator()
     {
-        for(int i=0; i<row;i++){
-            for(int j=0; j<column; j++){
-                if(board[i,j]==0){
-                    WalkGenerator(x,y);
-                }
-            }
-        }     
-    }
-
-    public void WalkGenerator(int first_row, int first_column){
         List<int[]> directions = new List<int[]>() {
             new int[] { 0, 1 },  // derecha
             new int[] { 1, 0 },  // abajo
@@ -91,44 +74,70 @@ public class Board
         };
 
         Random rand = new Random();
-        int x = first_row;
-        int y = first_column;
+        List<int[]> walls = new List<int[]>();
+        walls.Add(new int[] { 1, 1 });
 
-         for (int step = 0; step < 50; step++) 
+        while (walls.Count > 0)
         {
-            var direction = directions[rand.Next(directions.Count)]; 
-            int newX = x + direction[0];
-            int newY = y + direction[1];
+            // pared aleatoria
+            int randomIndex = rand.Next(walls.Count);
+            int[] wall = walls[randomIndex];
+            walls.RemoveAt(randomIndex);
 
-            if (ValidMove(newX, newY))
+            int x = wall[0];
+            int y = wall[1];
+
+            // Verificar las celdas vecinas y si están vacías (0) o no tienen ficha (-1)
+            foreach (var direction in directions)
             {
-                board[newX, newY] = 0; 
-                x = newX;  
-                y = newY;
+                int newX = x + direction[0];
+                int newY = y + direction[1];
+
+                if (ValidMove(newX, newY))
+                {
+                    board[x, y] = 0; // Convertimos la pared en camino
+
+                    // Añadimos las celdas vecinas como paredes si están vacías
+                    if (IsInsideBounds(newX, newY) && board[newX, newY] == 1)
+                    {
+                        walls.Add(new int[] { newX, newY });
+                    }
+                }
             }
         }
     }
+
 
     public bool ValidMove(int x, int y)
     {
-        return x >= 0 && x < row && y >= 0 && y < column && board[x, y] == 1;
+        return x >= 0 && x < row && y >= 0 && y < column && board[x, y] != -1; // no puede ser ficha
     }
 
-        public void PrintBoard()
-    {  
-        for (int i = 0; i < row; i++)
+    
+    public bool IsInsideBounds(int x, int y)    // dentro de limites
+    {
+        return x >= 0 && x < row && y >= 0 && y < column;
+    }
+
+    // Clase UI
+
+    public void PrintBoard()
+    {
+        for (int i = 0; i < row; i++) 
         {
-            for (int j = 0; j < column; j++)
+            for (int j = 0; j < column; j++) 
             {
-                Console.Write(board[i, j] == 1 ? "0" : " "); 
+                if (board[i, j] == -1)
+                    Console.Write("❄️");  // Ficha
+                else if (board[i, j] == 1)
+                    Console.Write("⬜");  
+                else
+                    Console.Write("☁️");
             }
             Console.WriteLine();
-
         }
     }
-
-    //esto esta mal cambialo todo
-
+}
 
  //    static int[,] IsRecheable(int[,] board, int first_row, int first_column){ //algoritmo de lee
  //        int rows = board.GetLength(0); //marcar cantidad de filas y columnas 
@@ -138,7 +147,7 @@ public class Board
  //
  //    }
 
-}
+
 
 
 
