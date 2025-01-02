@@ -1,7 +1,8 @@
 namespace sky_maze_game.GameLogic;
 
 public class GameLogic{
-    public void MainMenu(){
+    public void MainMenu()
+    {
         while(true)
         {
             string input = Console.ReadLine();
@@ -14,7 +15,7 @@ public class GameLogic{
                 Console.WriteLine("Iniciando juego...");
                 System.Threading.Thread.Sleep(1000);
                 Console.Clear();
-                Game();             
+                SelectionMenu();        
             }
             else if (state == 0)
             {
@@ -24,159 +25,166 @@ public class GameLogic{
         }
     }
 
+    public void SelectionMenu()
+    {
+
+        //JUGADORES
+        Console.WriteLine("Introduzca la cantidad de jugadores:");
+        if (!int.TryParse(Console.ReadLine(), out int cant_jugadores) || cant_jugadores < 1 || cant_jugadores > 4) {
+            Console.WriteLine("Entrada inválida. Debe ser un número entre 1 y 4.");
+            SelectionMenu();
+        }
+
+        List<Player> jugadores = new List<Player>();
+        for (int i=1;i<=cant_jugadores;i++){
+            Console.WriteLine($"Ingresa el nombre del Jugador {i}:");
+            string nombreJugador = Console.ReadLine();
+            jugadores.Add(new Player(nombreJugador));  
+        }
+
+        System.Threading.Thread.Sleep(2000);
+        Console.Clear();
+
+        //FICHAS
+        foreach (Player jugador in jugadores)
+        {
+            Console.WriteLine($"Jugador {jugador.Nombre}, ingrese las 3 fichas a utilizar:");
+            List<Ficha> fichasDisponiblesParaJugador = new List<Ficha>(Ficha.FichasDisponibles);
+            for (int i = 0; i < 3; i++)
+            {
+                if (fichasDisponiblesParaJugador.Count == 0)
+                {
+                    Console.WriteLine("No hay más fichas disponibles.");
+                    break;
+                }
+
+                Ficha fichaSeleccionada = SeleccionarFicha(fichasDisponiblesParaJugador);
+
+                if (fichaSeleccionada != null)
+                {
+                    jugador.Fichas.Add(fichaSeleccionada);
+                }
+                else
+                {
+                    Console.WriteLine("Selección inválida.");
+                    i--;
+                }
+            }
+            System.Threading.Thread.Sleep(2000);
+            Console.Clear();
+        }   
+    }
+
+    public Ficha SeleccionarFicha(List<Ficha> fichasDisponibles)
+    {
+        Console.WriteLine("\nFichas disponibles:");
+        for(int i=0;i<Ficha.FichasDisponibles.Count;i++){
+            Console.WriteLine($"{i+1}. {Ficha.FichasDisponibles[i].Nombre}");
+        }
+
+        Console.WriteLine("Elija una ficha ingresando su numero.");
+        int selection;
+
+        while(!int.TryParse(Console.ReadLine(), out selection) || selection < 1 || selection > Ficha.FichasDisponibles.Count) {
+        Console.WriteLine("Entrada inválida. Por favor, selecciona un número válido.");
+        }
+
+        Ficha fichaSeleccionada = fichasDisponibles[selection - 1];
+        fichasDisponibles.RemoveAt(selection - 1);
+        Console.WriteLine($"Has seleccionado la ficha: {fichaSeleccionada.Nombre}");
+
+        return fichaSeleccionada;
+    }
+
     public void Game()
     {  
-        Board board = new Board(10, 10);   
-        board.InitializeBoard();
-        board.BoardGenerator();
-        board.PrintBoard();
+        Console.WriteLine("Generando el laberinto...");
+        System.Threading.Thread.Sleep(1000);
+        Console.Clear();
+        Console.WriteLine("1- REINICIAR\n" + "0- SALIR");
     }
 }
 
-public class Board
-{
+
+class Board {
+    int dimension;
+    int[,] directions;
     int[,] board;
+    Random rand; 
 
-    int row, column;
-    int[] directions;
-    Random rand = new Random();
-
-
-    public Board(int row, int column)
-    {
-        this.row = row;
-        this.column = column;
-        board = new int[row, column];
-    }
-
-    public void InitializeBoard()
-    {
-        board[0,0]=-1;
-        board[row-1, column-1]=-1;
-        for(int i = 0; i<row; i++)
-        {
-            for(int j=0; j<column; j++)
-            { 
-                if(board[i,j]!=-1){
-                    board[i,j]=1;
-                }
-            }    
-        }
-    }
-
-    public void BoardGenerator()
-    {
-        List<int[]> directions = new List<int[]>() {
-            new int[] { 0, 1 },  // derecha
-            new int[] { 1, 0 },  // abajo
-            new int[] { 0, -1 }, // izquierda
-            new int[] { -1, 0 }  // arriba
-        };
-
-        Random rand = new Random();
-        List<int[]> walls = new List<int[]>();
-        walls.Add(new int[] { 1, 1 });
-
-        while (walls.Count > 0)
-        {
-            // pared aleatoria
-            int randomIndex = rand.Next(walls.Count);
-            int[] wall = walls[randomIndex];
-            walls.RemoveAt(randomIndex);
-
-            int x = wall[0];
-            int y = wall[1];
-
-            // Verificar las celdas vecinas y si están vacías (0) o no tienen ficha (-1)
-            foreach (var direction in directions)
-            {
-                int newX = x + direction[0];
-                int newY = y + direction[1];
-
-                if (ValidMove(newX, newY))
-                {
-                    board[x, y] = 0; // Convertimos la pared en camino
-
-                    // Añadimos las celdas vecinas como paredes si están vacías
-                    if (IsInsideBounds(newX, newY) && board[newX, newY] == 1)
-                    {
-                        walls.Add(new int[] { newX, newY });
-                    }
-                }
+    public static void BoardInitializer(){
+        int dimension = 10;
+        int[,] board = new int[dimension,dimension];
+        for(int i=0;i<dimension;i++){
+            for(int j=0;j<dimension;j++){
+                Console.Write(0 + " \n");
             }
-        }
+        }  
     }
 
-
-    public bool ValidMove(int x, int y)
+    public static void BoardGenerator()
     {
-        return x >= 0 && x < row && y >= 0 && y < column && board[x, y] != -1; // no puede ser ficha
-    }
+        Random rand = new Random(); //elige valores aleatoriamente 
+    }   
 
-    
-    public bool IsInsideBounds(int x, int y)    // dentro de limites
+    public static void BoardValidator()
     {
-        return x >= 0 && x < row && y >= 0 && y < column;
+
     }
 
-    // Clase UI
-
-    public void PrintBoard()
+        
+    public static void ImprimirLaberinto()
     {
-        for (int i = 0; i < row; i++) 
-        {
-            for (int j = 0; j < column; j++) 
-            {
-                if (board[i, j] == -1)
-                    Console.Write("❄️");  // Ficha
-                else if (board[i, j] == 1)
-                    Console.Write("⬜");  
-                else
-                    Console.Write("☁️");
-            }
-            Console.WriteLine();
-        }
+
     }
+
 }
 
- //    static int[,] IsRecheable(int[,] board, int first_row, int first_column){ //algoritmo de lee
- //        int rows = board.GetLength(0); //marcar cantidad de filas y columnas 
- //        int columns = board.GetLength(1);
- //        int[,] distance = new int[rows,columns]; //nuevo array para añadir las distancias
- //        distance[first_row , first_column] = 1; //celda inicial
- //
- //    }
+
+public class Ficha{
+    public string Nombre { get; set; }
+
+    public static List<Ficha> FichasDisponibles = new List<Ficha> {
+    new Ficha { Nombre = "Tornado" },
+    new Ficha { Nombre = "Neblina" },
+    new Ficha { Nombre = "Rayo" },
+    new Ficha { Nombre = "Ala" },
+    new Ficha { Nombre = "Estrella" },
+    new Ficha { Nombre = "Eclipse" },
+    };
+
+}
+
+public class Player{
+    public string Nombre {get; set;}
+    public List<Ficha> Fichas { get; set; } = new List<Ficha>();
+
+    public Player(string nombre) {
+        Nombre = nombre;
+    }    
+}
+
+
+public class Obstacules{
+}
+
+
+public class Tramps{
+}
+
+public class Habilidades{
+// copo de nieve (trampa): congelar por 3 turnos
+// lluvia (trampa): resbalar y retroceder 5 casillas
+// rayo (trampa): paralizar un area cercana
+// viento: resbala 3/5 casillas en direccion del viento
+// ala: rebasa 1 obstaculo
+// estrella: rompe 1 obstaculo
+// neblina: nubla un area
+// eclipse: toma control de la habilidad de la ficha enemiga 
+// tormenta: crea un paralizante temporal
+}
 
 
 
 
-
-//public class Fichas{
-//    string 
-//    string 
-//    string 
-//    string 
-//    string 
-//    string 
-//    string 
-
-//
-//}
-//
-//public class Player{
-
-
-
-//}
-
-//public class Obstacules{
-
-
-
-//}
-
-//public class Tramps{
-
-
-//}
 
