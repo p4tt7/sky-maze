@@ -95,49 +95,94 @@ public class GameLogic{
 
         return fichaSeleccionada;
     }
-
-    public void Game()
-    {  
-        Console.WriteLine("Generando el laberinto...");
-        System.Threading.Thread.Sleep(1000);
-        Console.Clear();
-        Console.WriteLine("1- REINICIAR\n" + "0- SALIR");
-    }
 }
 
 
-class Board {
-    int dimension;
-    int[,] directions;
-    int[,] board;
-    Random rand; 
+public class Board {
+    static int dimension = 10;
+    int[,] directions = {{-1,0},{0,1}}; //Norte y Este respectivamente
+    int[,] board = new int[dimension,dimension];
+    Random rand = new Random(); 
 
-    public static void BoardInitializer(){
-        int dimension = 10;
-        int[,] board = new int[dimension,dimension];
+    public void BoardInitializer(){
         for(int i=0;i<dimension;i++){
             for(int j=0;j<dimension;j++){
-                Console.Write(0 + " \n");
+                board[i,j]=1;
             }
         }  
     }
 
-    public static void BoardGenerator()
+    public void BoardGenerator() //binary tree
     {
+        int column=dimension;
+        int row=dimension;
         Random rand = new Random(); //elige valores aleatoriamente 
-    }   
+        
+        for(int i = 0; i < dimension; i++){
+            for(int j = 0; j < dimension; j++){
+                int valid_directions = 0; // cuenta direcciones válidas
+        
+                //verificar si hay direcciones validas
+                if(Range(i - 1, j) && board[i - 1, j] != 0){
+                    valid_directions++; // al norte
+                } 
+                if(Range(i, j + 1) && board[i, j + 1] != 0){
+                    valid_directions++; // al este
+                } 
 
-    public static void BoardValidator()
+                if(valid_directions > 0){ // si hay al menos una dirección válida
+                    int random_direction = rand.Next(0, valid_directions);
+
+                    //mover al norte
+                    if(random_direction == 0 && Range(i - 1, j) && board[i - 1, j] != 0){
+                        board[i, j] = 0; // Marcar la celda actual como parte del camino
+                        board[i - 1, j] = 0; // Marcar la celda hacia el norte como parte del camino
+                    }
+                        //sino pues el este
+                    if(random_direction == 1 && Range(i, j + 1) && board[i, j + 1] != 0){
+                        board[i, j] = 0; // Marcar la celda actual como parte del camino
+                        board[i, j + 1] = 0; // Marcar la celda hacia el este como parte del camino
+                    }
+                }    
+            }    
+        }   
+    }
+
+    public bool Range(int row, int column){
+        if(row>=0 && row<dimension && column>=0 && column<dimension){
+            return true;
+
+        }
+        else{
+            return false;
+        }
+    }
+
+    public static bool BoardValidator() //lee algoritmo
     {
-
+        return true;
+  
     }
 
         
-    public static void ImprimirLaberinto()
+    public void PrintBoard()
     {
-
+        for (int i = 0; i < dimension; i++)
+        {
+            for (int j = 0; j < dimension; j++)
+            {
+                if (board[i, j] == 0)
+                {
+                    Console.Write(" ");
+                }
+                else
+                {
+                    Console.Write("#");
+                }
+            }
+            Console.WriteLine();
+        }
     }
-
 }
 
 
@@ -152,7 +197,6 @@ public class Ficha{
     new Ficha { Nombre = "Estrella" },
     new Ficha { Nombre = "Eclipse" },
     };
-
 }
 
 public class Player{
@@ -169,7 +213,12 @@ public class Obstacules{
 }
 
 
-public class Tramps{
+public class Trampa{
+//    public static List<Trampa> Trampas = new List<Trampa> {
+//    new Trampa {Nombre = "Copo de Nieve"},
+//    new Trampa {Nombre = "LLuvia"},
+//    new Trampa {Nombre = "Rayo"},
+//    };
 }
 
 public class Habilidades{
