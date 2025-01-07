@@ -1,36 +1,14 @@
+using System.Security.Cryptography.X509Certificates;
+
 namespace sky_maze_game.GameLogic;
 
 public class GameLogic{
-    public void MainMenu()
-    {
-        while(true)
-        {
-            string input = Console.ReadLine();
-            if(!int.TryParse(input, out int state) || (state!=0 && state!=1)){
-                Console.WriteLine("Entrada invalida. Ingrese 0 o 1");
-                continue;
-            }
-            if (state == 1)
-            {
-                Console.WriteLine("Iniciando juego...");
-                System.Threading.Thread.Sleep(1000);
-                Console.Clear();
-                SelectionMenu();        
-            }
-            else if (state == 0)
-            {
-                Console.WriteLine("Saliendo del juego");
-                break;
-            }
-        }
-    }
 
-    public void SelectionMenu()
+    public static void SelectionMenu()
     {
-
         //JUGADORES
         Console.WriteLine("Introduzca la cantidad de jugadores:");
-        if (!int.TryParse(Console.ReadLine(), out int cant_jugadores) || cant_jugadores < 1 || cant_jugadores > 4) {
+        if (!int.TryParse(Console.ReadLine(), out int cant_jugadores) || cant_jugadores<1 || cant_jugadores>4) {
             Console.WriteLine("Entrada inválida. Debe ser un número entre 1 y 4.");
             SelectionMenu();
         }
@@ -72,10 +50,10 @@ public class GameLogic{
             }
             System.Threading.Thread.Sleep(2000);
             Console.Clear();
-        }   
+        }  
     }
 
-    public Ficha SeleccionarFicha(List<Ficha> fichasDisponibles)
+    public static Ficha SeleccionarFicha(List<Ficha> fichasDisponibles)
     {
         Console.WriteLine("\nFichas disponibles:");
         for(int i=0;i<Ficha.FichasDisponibles.Count;i++){
@@ -98,13 +76,16 @@ public class GameLogic{
 }
 
 
-public class Board {
-    static int dimension = 10;
-    int[,] directions = {{-1,0},{0,1}}; //Norte y Este respectivamente
-    int[,] board = new int[dimension,dimension];
-    Random rand = new Random(); 
+public class Board{
+    public static int dimension = 10;
+    static int[,] directions = {{-1,0},{0,1}}; //Norte y Este respectivamente
+    public static int[,] board = new int[dimension,dimension];
+    Random rand = new Random();
+    int row = dimension;
+    int column = dimension;
+    public static int winning_position;
 
-    public void BoardInitializer(){
+    public static void BoardInitializer(){
         for(int i=0;i<dimension;i++){
             for(int j=0;j<dimension;j++){
                 board[i,j]=1;
@@ -112,43 +93,41 @@ public class Board {
         }  
     }
 
-    public void BoardGenerator() //binary tree
+    public static void BoardGenerator() //binary tree
     {
-        int column=dimension;
-        int row=dimension;
-        Random rand = new Random(); //elige valores aleatoriamente 
+        Random rand = new Random();
         
         for(int i = 0; i < dimension; i++){
             for(int j = 0; j < dimension; j++){
                 int valid_directions = 0; // cuenta direcciones válidas
         
                 //verificar si hay direcciones validas
-                if(Range(i - 1, j) && board[i - 1, j] != 0){
+                if(Range(i-1,j) && board[i-1,j]!=0){
                     valid_directions++; // al norte
                 } 
-                if(Range(i, j + 1) && board[i, j + 1] != 0){
+                if(Range(i,j+1) && board[i,j+1]!=0){
                     valid_directions++; // al este
                 } 
 
-                if(valid_directions > 0){ // si hay al menos una dirección válida
+                if(valid_directions>0){ // si hay al menos una dirección válida
                     int random_direction = rand.Next(0, valid_directions);
 
                     //mover al norte
-                    if(random_direction == 0 && Range(i - 1, j) && board[i - 1, j] != 0){
-                        board[i, j] = 0; // Marcar la celda actual como parte del camino
-                        board[i - 1, j] = 0; // Marcar la celda hacia el norte como parte del camino
+                    if(random_direction == 0 && Range(i-1,j) && board[i-1,j]!=0){
+                        board[i,j]=0; // marcar la celda actual como parte del camino
+                        board[i-1,j]=0; // Marcar la celda hacia el norte como parte del camino
                     }
                         //sino pues el este
                     if(random_direction == 1 && Range(i, j + 1) && board[i, j + 1] != 0){
-                        board[i, j] = 0; // Marcar la celda actual como parte del camino
-                        board[i, j + 1] = 0; // Marcar la celda hacia el este como parte del camino
+                        board[i, j] = 0; // marcar la celda actual como parte del camino
+                        board[i, j + 1] = 0; // marcar la celda hacia el este como parte del camino
                     }
                 }    
             }    
         }   
     }
 
-    public bool Range(int row, int column){
+    public static bool Range(int row, int column){
         if(row>=0 && row<dimension && column>=0 && column<dimension){
             return true;
 
@@ -163,40 +142,26 @@ public class Board {
         return true;
   
     }
-
-        
-    public void PrintBoard()
-    {
-        for (int i = 0; i < dimension; i++)
-        {
-            for (int j = 0; j < dimension; j++)
-            {
-                if (board[i, j] == 0)
-                {
-                    Console.Write(" ");
-                }
-                else
-                {
-                    Console.Write("#");
-                }
-            }
-            Console.WriteLine();
-        }
-    }
 }
 
 
 public class Ficha{
+    Random rand = new Random();
     public string Nombre { get; set; }
+    public string Simbolo {get; set; }
 
-    public static List<Ficha> FichasDisponibles = new List<Ficha> {
-    new Ficha { Nombre = "Tornado" },
-    new Ficha { Nombre = "Neblina" },
-    new Ficha { Nombre = "Rayo" },
-    new Ficha { Nombre = "Ala" },
-    new Ficha { Nombre = "Estrella" },
-    new Ficha { Nombre = "Eclipse" },
+    public static List<Ficha> FichasDisponibles = new List<Ficha>{
+    new Ficha {Nombre = "Tornado" , Simbolo = "🌪️"},
+    new Ficha {Nombre = "Neblina" , Simbolo = "🌫️"},
+    new Ficha {Nombre = "Viento" , Simbolo = "🌬️"},
+    new Ficha {Nombre = "Ala" , Simbolo = "🪽"},
+    new Ficha {Nombre = "Estrella" , Simbolo = "⭐"},
+    new Ficha {Nombre = "Eclipse" , Simbolo = "🌑"},
     };
+
+    public static void FichaInitializer(){
+
+    }
 }
 
 public class Player{
@@ -204,21 +169,55 @@ public class Player{
     public List<Ficha> Fichas { get; set; } = new List<Ficha>();
 
     public Player(string nombre) {
-        Nombre = nombre;
+       Nombre = nombre;
     }    
 }
 
 
-public class Obstacules{
+public class Obstacule{
+    public static Random random = new Random();
+    public string Nombre { get; set; }
+    public string Simbolo { get; set; }
+
+    public static List<Obstacule> Obstaculos = new List<Obstacule>{
+        new Obstacule {Nombre = "Agujero en el Cielo" , Simbolo = "🌀"},
+        new Obstacule {Nombre = "Zona de Tormenta" , Simbolo = "🌩️"}
+    };
+
+    public static void ObstaculeGenerator(){
+        for(int i=0;i<Board.dimension;i++){
+            for(int j=0;j<Board.dimension;j++){
+                if(Board.board[i,j]==0 && random.NextDouble()<0.1){
+                    Board.board[i,j]=2;
+                }
+            }
+        }
+    }
+
+
 }
 
 
 public class Trampa{
-//    public static List<Trampa> Trampas = new List<Trampa> {
-//    new Trampa {Nombre = "Copo de Nieve"},
-//    new Trampa {Nombre = "LLuvia"},
-//    new Trampa {Nombre = "Rayo"},
-//    };
+    public static Random random = new Random();
+    public string Nombre { get; set; }
+    public string Simbolo { get; set; }
+
+    public static List<Trampa> Trampas = new List<Trampa>{
+    new Trampa {Nombre = "Copo de Nieve" , Simbolo = "⛄"},
+    new Trampa {Nombre = "LLuvia" , Simbolo = "🌧️"},
+    new Trampa {Nombre = "Rayo" , Simbolo = "⚡"},
+    };
+
+    public static void TrampaGenerator(){
+        for(int i=0;i<Board.dimension;i++){
+            for(int j=0;j<Board.dimension;j++){
+                if(Board.board[i,j]==0 && random.NextDouble()<0.1){
+                    Board.board[i,j]=-1;
+                }
+            }
+        }
+    }   
 }
 
 public class Habilidades{

@@ -6,7 +6,37 @@ class Program
     public static void Main()
     {
         GameUI.Start();
-        GameLogic gameLogic = new GameLogic(); 
-        gameLogic.MainMenu();
+        while(true)
+        {
+            string? state = Console.ReadLine();
+            if (string.IsNullOrEmpty(state))
+            {  
+                Console.WriteLine("Entrada no válida. Por favor, introduce un número.");
+            }
+
+            if (state == "1")
+            {
+                Console.WriteLine("Iniciando juego...");
+                System.Threading.Thread.Sleep(1000);
+                Console.Clear();
+                Game();        
+            }
+
+            else if (state == "0")
+            {
+                Console.WriteLine("Saliendo del juego");
+                break;
+            }
+        } 
+        
     }
+
+    public static void Game(){
+        GameLogic.SelectionMenu();
+        Board.BoardInitializer();
+        Board.BoardGenerator();
+        Trampa.TrampaGenerator();
+        Obstacule.ObstaculeGenerator();
+        GameUI.PrintBoard();
+    }  
 }

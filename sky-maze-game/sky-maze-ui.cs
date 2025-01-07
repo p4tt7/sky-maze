@@ -1,3 +1,5 @@
+using sky_maze_game.GameLogic;
+
 namespace sky_maze_game.GameUI;
 
 
@@ -24,23 +26,34 @@ public class GameUI
     }
 
 
-//    public class Maze{
-//        string tramp_1 = "⛈️";
-//        string tramp_2 = "❄️";
-//        string tramp_3 = "🌪️";
-//        string walls = "☁️";
-//        string obstacule_1 = "🌧️";
-//        string obstacule_2 = "🌫️";
-//        string winning_position = "🌞";
-//    }
-//    public static void Maze(){
-//
-//    }
+    public static void PrintBoard()
+    {
+        for(int i = 0; i < Board.dimension; i++)
+        {
+            for(int j = 0; j < Board.dimension; j++)
+            {
+                if(Board.board[i, j]==0) //camino
+                {
+                    Console.Write("⬛");
+                }
+
+                if(Board.board[i,j]==1) //pared
+                {
+                    Console.Write("⬜");
+                }
+
+                
+                if(Board.board[i, j]==-1){ //trampa
+                    int indexTrampa = Trampa.random.Next(0, Trampa.Trampas.Count);
+                    Console.Write(Trampa.Trampas[indexTrampa].Simbolo);
+                }
+
+                if(Board.board[i,j]== 2){
+                    int indexObstacule = Obstacule.random.Next(0,Obstacule.Obstaculos.Count);
+                    Console.Write(Obstacule.Obstaculos[indexObstacule].Simbolo);
+                }
+            }
+            Console.WriteLine();
+        }
+    }
 }
-
-
-
-
-
-
-
