@@ -75,15 +75,11 @@ public class GameLogic{
     }
 }
 
-
 public class Board{
-    public static int dimension = 10;
-    static int[,] directions = {{-1,0},{0,1}}; //Norte y Este respectivamente
+    public static int dimension = 20;
     public static int[,] board = new int[dimension,dimension];
     Random rand = new Random();
-    int row = dimension;
-    int column = dimension;
-    public static int winning_position;
+
 
     public static void BoardInitializer(){
         for(int i=0;i<dimension;i++){
@@ -97,53 +93,37 @@ public class Board{
     {
         Random rand = new Random();
         
-        for(int i = 0; i < dimension; i++){
-            for(int j = 0; j < dimension; j++){
-                int valid_directions = 0; // cuenta direcciones válidas
-        
-                //verificar si hay direcciones validas
-                if(Range(i-1,j) && board[i-1,j]!=0){
-                    valid_directions++; // al norte
-                } 
-                if(Range(i,j+1) && board[i,j+1]!=0){
-                    valid_directions++; // al este
-                } 
+        for(int i=0; i<dimension; i++){
+            for(int j=0; j<dimension; j++){
+                List<int[]> validDirections = new List<int[]>();
+            
+                if(i>0){
+                    validDirections.Add(new int[] { -1, 0 }); // norte
+                }
+                if(j<dimension-1){ 
+                    validDirections.Add(new int[] { 0, 1 }); // este
+                }
 
-                if(valid_directions>0){ // si hay al menos una dirección válida
-                    int random_direction = rand.Next(0, valid_directions);
-
-                    //mover al norte
-                    if(random_direction == 0 && Range(i-1,j) && board[i-1,j]!=0){
-                        board[i,j]=0; // marcar la celda actual como parte del camino
-                        board[i-1,j]=0; // Marcar la celda hacia el norte como parte del camino
-                    }
-                        //sino pues el este
-                    if(random_direction == 1 && Range(i, j + 1) && board[i, j + 1] != 0){
-                        board[i, j] = 0; // marcar la celda actual como parte del camino
-                        board[i, j + 1] = 0; // marcar la celda hacia el este como parte del camino
-                    }
+                if (validDirections.Count>0 && rand.NextDouble()<0.7){ 
+                    int[] chosenDirection = validDirections[rand.Next(validDirections.Count)];
+                    int newRow = i+chosenDirection[0];
+                    int newCol = j+chosenDirection[1];
+    
+                    board[newRow, newCol] = 0;
                 }    
             }    
         }   
     }
 
-    public static bool Range(int row, int column){
-        if(row>=0 && row<dimension && column>=0 && column<dimension){
-            return true;
 
-        }
-        else{
-            return false;
-        }
-    }
-
-    public static bool BoardValidator() //lee algoritmo
+    public static bool BoardValidator() //algoritmo de lee
     {
+
+        
         return true;
   
     }
 }
-
 
 public class Ficha{
     Random rand = new Random();
