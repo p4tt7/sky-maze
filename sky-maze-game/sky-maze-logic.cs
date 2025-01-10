@@ -19,7 +19,7 @@ public class GameLogic{
             string nombreJugador = Console.ReadLine();
             jugadores.Add(new Player(nombreJugador));  
         }
-
+        
         System.Threading.Thread.Sleep(2000);
         Console.Clear();
 
@@ -27,16 +27,21 @@ public class GameLogic{
         foreach (Player jugador in jugadores)
         {
             Console.WriteLine($"Jugador {jugador.Nombre}, ingrese las 3 fichas a utilizar:");
-            List<Ficha> fichasDisponiblesParaJugador = new List<Ficha>(Ficha.FichasDisponibles);
+            Console.WriteLine("\nFichas disponibles:");
+            for(int i=0;i<Ficha.FichasDisponibles.Count;i++){
+                Console.WriteLine($"{i+1}. {Ficha.FichasDisponibles[i].Nombre}");
+            }
+
+            List<Ficha> FichasJugador = new List<Ficha>(Ficha.FichasDisponibles);
             for (int i = 0; i < 3; i++)
             {
-                if (fichasDisponiblesParaJugador.Count == 0)
+                if (FichasJugador.Count == 0)
                 {
                     Console.WriteLine("No hay más fichas disponibles.");
                     break;
                 }
 
-                Ficha fichaSeleccionada = SeleccionarFicha(fichasDisponiblesParaJugador);
+                Ficha fichaSeleccionada = SeleccionarFicha(FichasJugador);
 
                 if (fichaSeleccionada != null)
                 {
@@ -55,10 +60,6 @@ public class GameLogic{
 
     public static Ficha SeleccionarFicha(List<Ficha> fichasDisponibles)
     {
-        Console.WriteLine("\nFichas disponibles:");
-        for(int i=0;i<Ficha.FichasDisponibles.Count;i++){
-            Console.WriteLine($"{i+1}. {Ficha.FichasDisponibles[i].Nombre}");
-        }
 
         Console.WriteLine("Elija una ficha ingresando su numero.");
         int selection;
@@ -78,7 +79,7 @@ public class GameLogic{
 public class Board{
     public static int dimension = 20;
     public static int[,] board = new int[dimension,dimension];
-    Random rand = new Random();
+    public static int winning_position = board[10,10];
 
 
     public static void BoardInitializer(){
@@ -98,13 +99,13 @@ public class Board{
                 List<int[]> validDirections = new List<int[]>();
             
                 if(i>0){
-                    validDirections.Add(new int[] { -1, 0 }); // norte
+                    validDirections.Add(new int[] { -1, 0 }); // norte es valido
                 }
                 if(j<dimension-1){ 
-                    validDirections.Add(new int[] { 0, 1 }); // este
+                    validDirections.Add(new int[] { 0, 1 }); // este es valido
                 }
 
-                if (validDirections.Count>0 && rand.NextDouble()<0.7){ 
+                if (validDirections.Count>0 && rand.NextDouble()<0.8){ 
                     int[] chosenDirection = validDirections[rand.Next(validDirections.Count)];
                     int newRow = i+chosenDirection[0];
                     int newCol = j+chosenDirection[1];
@@ -116,19 +117,88 @@ public class Board{
     }
 
 
-    public static bool BoardValidator() //algoritmo de lee
+    public static int[,] DistanceValidator(int[,] board, int firstRow, int firstColumn) //algoritmo de lee
     {
+        int[,] distancias = new int[dimension,dimension];
+        distancias[firstRow,firstColumn] = 1;
+        int[] dr = {-1,1,0,0,-1,1,-1,1};
+        int[] dc = {0,0,1,-1,-1,-1,1,1};
+        bool change;
 
+        do{
+            change = false;
+
+            for(int i=0;i<dimension;i++){
+                for(int j=0;j<dimension;j++){
+                    if(distancias[i,j]==0){
+                        continue;
+                    }
+                    if(board[i,j]==1 || board[i,j]==2){
+                        continue;
+                    }
+                    for(int d=0;d<dr.Length;d++){
+                        int vr= i+dr[d];
+                        int vc= j+dc[d];
+
+                        if(Range(dimension, vr, vc) && distancias[vr,vc]==0 && board[vr,vc]==0){
+                            distancias[vr,vc]=distancias[i,j]+1;
+                            change=true;
+                        } 
+                    }  
+                }
+            }
+        } while(change);
         
-        return true;
-  
+        return distancias;
     }
+
+    public static bool Range(int dimension, int row, int column){
+        if(row>=0 && row<dimension && column >+0 && column<dimension){
+            return true;
+        }
+        else{
+            return false;
+        }
+
+    }
+
+    public static void ValidatedBoard(int[,] board, int[,] distancias){
+
+        int[] dr = {-1,1,0,0,-1,1,-1,1};
+        int[] dc = {0,0,1,-1,-1,-1,1,1};
+
+        for(int i=0;i<dimension;i++){
+            for(int j=0; j<dimension;j++){
+                if(distancias[i,j]==-1){
+
+                    for(int d=0;d<dr.Length;d++){
+                        int vr= i+dr[d];
+                        int vc= j+dc[d];
+
+                        if(Range(dimension,vr,vc) && distancias[vr,vc]!=-1){
+                            board[i,j]=0;
+                            distancias[i,j]=distancias[vr,vc]+1;
+                            break;
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+}
+
+public class Position
+{
+    public int x { get; set; }
+    public int y { get; set; }
 }
 
 public class Ficha{
     Random rand = new Random();
     public string Nombre { get; set; }
     public string Simbolo {get; set; }
+    public Position Posicion { get; set; }
 
     public static List<Ficha> FichasDisponibles = new List<Ficha>{
     new Ficha {Nombre = "Tornado" , Simbolo = "🌪️"},
@@ -140,8 +210,23 @@ public class Ficha{
     };
 
     public static void FichaInitializer(){
+        List<Player> jugadores = new List<Player>();
+        foreach (Player jugador in jugadores){
+            
+
+        }
 
     }
+
+    public static void Movement(){
+
+    }
+
+    public static bool IsWinning(){
+        return true;
+    }
+
+
 }
 
 public class Player{
@@ -150,6 +235,7 @@ public class Player{
 
     public Player(string nombre) {
        Nombre = nombre;
+       Fichas = new List<Ficha>();
     }    
 }
 
@@ -167,14 +253,12 @@ public class Obstacule{
     public static void ObstaculeGenerator(){
         for(int i=0;i<Board.dimension;i++){
             for(int j=0;j<Board.dimension;j++){
-                if(Board.board[i,j]==0 && random.NextDouble()<0.1){
+                if(Board.board[i,j]==0 && random.NextDouble()<0.05){
                     Board.board[i,j]=2;
                 }
             }
         }
     }
-
-
 }
 
 
@@ -192,7 +276,7 @@ public class Trampa{
     public static void TrampaGenerator(){
         for(int i=0;i<Board.dimension;i++){
             for(int j=0;j<Board.dimension;j++){
-                if(Board.board[i,j]==0 && random.NextDouble()<0.1){
+                if(Board.board[i,j]==0 && random.NextDouble()<0.05){
                     Board.board[i,j]=-1;
                 }
             }

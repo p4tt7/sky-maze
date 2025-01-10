@@ -42,6 +42,10 @@ public class GameUI
                     Console.Write("⬜");
                 }
 
+                if(Board.board[i,j] == Board.winning_position){
+                    Console.Write("☀️");
+                }
+
                 
                 if(Board.board[i, j]==-1){ //trampa
                     int indexTrampa = Trampa.random.Next(0, Trampa.Trampas.Count);

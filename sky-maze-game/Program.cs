@@ -35,8 +35,13 @@ class Program
         GameLogic.SelectionMenu();
         Board.BoardInitializer();
         Board.BoardGenerator();
-        Trampa.TrampaGenerator();
         Obstacule.ObstaculeGenerator();
+        int[,] distancias = Board.DistanceValidator(Board.board, 0, 0);
+        Board.ValidatedBoard(Board.board, distancias);
+        Trampa.TrampaGenerator();
         GameUI.PrintBoard();
+        //while(posiciondeljugador !=winning_position){
+
+        //}
     }  
 }
