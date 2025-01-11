@@ -32,6 +32,12 @@ public class GameUI
         {
             for(int j = 0; j < Board.dimension; j++)
             {
+
+                if (i == 10 && j == 10)
+                {
+                Console.Write("☀️"); 
+                }
+
                 if(Board.board[i, j]==0) //camino
                 {
                     Console.Write("⬛");
@@ -41,11 +47,6 @@ public class GameUI
                 {
                     Console.Write("⬜");
                 }
-
-                if(Board.board[i,j] == Board.winning_position){
-                    Console.Write("☀️");
-                }
-
                 
                 if(Board.board[i, j]==-1){ //trampa
                     int indexTrampa = Trampa.random.Next(0, Trampa.Trampas.Count);

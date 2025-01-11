@@ -24,32 +24,38 @@ public class GameLogic{
         Console.Clear();
 
         //FICHAS
-        foreach (Player jugador in jugadores)
-        {
-            Console.WriteLine($"Jugador {jugador.Nombre}, ingrese las 3 fichas a utilizar:");
-            Console.WriteLine("\nFichas disponibles:");
-            for(int i=0;i<Ficha.FichasDisponibles.Count;i++){
-                Console.WriteLine($"{i+1}. {Ficha.FichasDisponibles[i].Nombre}");
-            }
+        foreach (Player jugador in jugadores){
 
-            List<Ficha> FichasJugador = new List<Ficha>(Ficha.FichasDisponibles);
+            List<Ficha> FichasDisponibles = new List<Ficha>(Ficha.FichasDisponibles);
+
             for (int i = 0; i < 3; i++)
             {
-                if (FichasJugador.Count == 0)
+                if (FichasDisponibles.Count == 0)
                 {
                     Console.WriteLine("No hay más fichas disponibles.");
                     break;
                 }
 
-                Ficha fichaSeleccionada = SeleccionarFicha(FichasJugador);
-
-                if (fichaSeleccionada != null)
+                Console.WriteLine("Elige una ficha:");
+                for (int j = 0; j < FichasDisponibles.Count; j++)
                 {
-                    jugador.Fichas.Add(fichaSeleccionada);
+                    Console.WriteLine($"{j + 1}. {FichasDisponibles[j].Nombre}");
                 }
+
+                Console.Write("Ingresa el numero de ficha para seleccionarla");
+                int eleccion = int.Parse(Console.ReadLine());
+                if(eleccion>0 && eleccion <= FichasDisponibles.Count){
+                    Ficha fichaSeleccionada = FichasDisponibles[eleccion - 1];
+                    jugador.SelectedFichas.Add(fichaSeleccionada);
+
+                    FichasDisponibles.RemoveAt(eleccion - 1);
+                    Console.WriteLine($"Has seleccionado: {fichaSeleccionada.Nombre}");
+
+                }
+
                 else
                 {
-                    Console.WriteLine("Selección inválida.");
+                    Console.WriteLine("Selección inválida. Intenta de nuevo");
                     i--;
                 }
             }
@@ -57,29 +63,13 @@ public class GameLogic{
             Console.Clear();
         }  
     }
-
-    public static Ficha SeleccionarFicha(List<Ficha> fichasDisponibles)
-    {
-
-        Console.WriteLine("Elija una ficha ingresando su numero.");
-        int selection;
-
-        while(!int.TryParse(Console.ReadLine(), out selection) || selection < 1 || selection > Ficha.FichasDisponibles.Count) {
-        Console.WriteLine("Entrada inválida. Por favor, selecciona un número válido.");
-        }
-
-        Ficha fichaSeleccionada = fichasDisponibles[selection - 1];
-        fichasDisponibles.RemoveAt(selection - 1);
-        Console.WriteLine($"Has seleccionado la ficha: {fichaSeleccionada.Nombre}");
-
-        return fichaSeleccionada;
-    }
 }
 
 public class Board{
     public static int dimension = 20;
     public static int[,] board = new int[dimension,dimension];
     public static int winning_position = board[10,10];
+    public static int[,] direcciones = {{0,-1},{0,1},{-1,0},{1,0}};
 
 
     public static void BoardInitializer(){
@@ -90,32 +80,45 @@ public class Board{
         }  
     }
 
-    public static void BoardGenerator() //binary tree
+    public static int[,] BoardGenerator() //binary tree
     {
-        Random rand = new Random();
-        
-        for(int i=0; i<dimension; i++){
-            for(int j=0; j<dimension; j++){
-                List<int[]> validDirections = new List<int[]>();
-            
-                if(i>0){
-                    validDirections.Add(new int[] { -1, 0 }); // norte es valido
-                }
-                if(j<dimension-1){ 
-                    validDirections.Add(new int[] { 0, 1 }); // este es valido
-                }
-
-                if (validDirections.Count>0 && rand.NextDouble()<0.8){ 
-                    int[] chosenDirection = validDirections[rand.Next(validDirections.Count)];
-                    int newRow = i+chosenDirection[0];
-                    int newCol = j+chosenDirection[1];
-    
-                    board[newRow, newCol] = 0;
-                }    
-            }    
-        }   
+        board[0,0]=0; //marca el inicio
+        GenerateMaze(board, 0, 0); //genera el laberunto
+        return board;
     }
 
+    private static void GenerateMaze(int[,] board, int currentRow, int currentCol){
+        int[] indices = { 0, 1, 2, 3 };
+        ShuffleDirections(indices);
+
+        for (int i = 0; i < 4; i++){
+            int directionIndex = indices[i];
+            int newRow = currentRow + direcciones[directionIndex, 0] * 2;
+            int newCol = currentCol + direcciones[directionIndex, 1] * 2;
+
+            if (newRow >= 0 && newRow < board.GetLength(0) && newCol >= 0 && newCol < board.GetLength(1) && board[newRow, newCol] == 1){
+                
+                board[currentRow + direcciones[directionIndex, 0], currentCol + direcciones[directionIndex, 1]] = 0;;
+                board[newRow, newCol] = 0;
+
+                GenerateMaze(board, newRow, newCol); 
+            }
+        }
+    }
+
+    private static void ShuffleDirections(int[] indices){
+        int n = indices.Length;
+        Random rand = new Random();
+
+        for (int i = n - 1; i > 0; i--){
+    
+            int j = rand.Next(0, i + 1);
+
+            int temp = indices[i];
+            indices[i] = indices[j];
+            indices[j] = temp;
+        }
+    }
 
     public static int[,] DistanceValidator(int[,] board, int firstRow, int firstColumn) //algoritmo de lee
     {
@@ -124,6 +127,12 @@ public class Board{
         int[] dr = {-1,1,0,0,-1,1,-1,1};
         int[] dc = {0,0,1,-1,-1,-1,1,1};
         bool change;
+
+        for(int i = 0; i < dimension; i++){
+            for(int j = 0; j < dimension; j++){
+                distancias[i, j] = -1;
+            }
+        }
 
         do{
             change = false;
@@ -153,7 +162,7 @@ public class Board{
     }
 
     public static bool Range(int dimension, int row, int column){
-        if(row>=0 && row<dimension && column >+0 && column<dimension){
+        if(row>=0 && row<dimension && column >=0 && column<dimension){
             return true;
         }
         else{
@@ -210,13 +219,9 @@ public class Ficha{
     };
 
     public static void FichaInitializer(){
-        List<Player> jugadores = new List<Player>();
-        foreach (Player jugador in jugadores){
             
-
         }
 
-    }
 
     public static void Movement(){
 
@@ -231,11 +236,11 @@ public class Ficha{
 
 public class Player{
     public string Nombre {get; set;}
-    public List<Ficha> Fichas { get; set; } = new List<Ficha>();
+    public List<Ficha> SelectedFichas { get; set; } = new List<Ficha>();
 
     public Player(string nombre) {
        Nombre = nombre;
-       Fichas = new List<Ficha>();
+       SelectedFichas = new List<Ficha>();
     }    
 }
 
