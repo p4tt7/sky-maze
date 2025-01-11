@@ -32,30 +32,33 @@ public class GameUI
         {
             for(int j = 0; j < Board.dimension; j++)
             {
-
-                if (i == 10 && j == 10)
-                {
-                Console.Write("☀️"); 
+                
+                if (i == 9 && j == 9){
+                    Console.Write("🟨"); 
                 }
 
-                if(Board.board[i, j]==0) //camino
+                else if(Board.board[i, j]=="c") //camino
                 {
                     Console.Write("⬛");
                 }
 
-                if(Board.board[i,j]==1) //pared
+                else if(Board.board[i,j]=="w") //pared
                 {
                     Console.Write("⬜");
                 }
                 
-                if(Board.board[i, j]==-1){ //trampa
+                else if(Board.board[i, j]=="t"){ //trampa
                     int indexTrampa = Trampa.random.Next(0, Trampa.Trampas.Count);
                     Console.Write(Trampa.Trampas[indexTrampa].Simbolo);
                 }
 
-                if(Board.board[i,j]== 2){
+                else if(Board.board[i,j]=="o"){
                     int indexObstacule = Obstacule.random.Next(0,Obstacule.Obstaculos.Count);
                     Console.Write(Obstacule.Obstaculos[indexObstacule].Simbolo);
+                }
+
+                else{
+                    Console.Write(Board.board[i,j]);     
                 }
             }
             Console.WriteLine();

@@ -39,6 +39,7 @@ class Program
         int[,] distancias = Board.DistanceValidator(Board.board, 0, 0);
         Board.ValidatedBoard(Board.board, distancias);
         Trampa.TrampaGenerator();
+        Ficha.FichaInitializer(Player.jugadores);
         GameUI.PrintBoard();
         //while(posiciondeljugador !=winning_position){
 
