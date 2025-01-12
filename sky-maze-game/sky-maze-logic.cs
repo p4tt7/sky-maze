@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 
@@ -223,14 +224,17 @@ public class Ficha{
     public string Nombre { get; set; }
     public string Simbolo {get; set; }
     public Position Posicion { get; set; }
+    public int Velocidad { get; set; }
+    public int CoolingTime { get; set; }
+    public static Random rand = new Random();
 
     public static List<Ficha> FichasDisponibles = new List<Ficha>{
-    new Ficha {Nombre = "Tornado" , Simbolo = "🌪️"},
-    new Ficha {Nombre = "Neblina" , Simbolo = "🌫️"},
-    new Ficha {Nombre = "Viento" , Simbolo = "🌬️"},
-    new Ficha {Nombre = "Ala" , Simbolo = "🪽"},
-    new Ficha {Nombre = "Estrella" , Simbolo = "⭐"},
-    new Ficha {Nombre = "Eclipse" , Simbolo = "🌑"},
+    new Ficha {Nombre = "Tornado" , Simbolo = "🌪️" , Velocidad = 3},
+    new Ficha {Nombre = "Neblina" , Simbolo = "🌫️" , Velocidad = 1},
+    new Ficha {Nombre = "Viento" , Simbolo = "🌬️" , Velocidad = 1},
+    new Ficha {Nombre = "Ala" , Simbolo = "🪽" , Velocidad = 2},
+    new Ficha {Nombre = "Estrella" , Simbolo = "⭐" , Velocidad = 3},
+    new Ficha {Nombre = "Eclipse" , Simbolo = "🌑" , Velocidad = 3},
     };
 
     public static void FichaInitializer(List<Player> jugadores){
@@ -247,14 +251,155 @@ public class Ficha{
             
     }
 
-    public static void Movement(){
+    public static void Movement(Ficha ficha){
+
+        int pasos = ficha.Velocidad;
+        ConsoleKeyInfo teclaPresionada = Console.ReadKey();
+
+        for(int i=0;i<pasos;i++){
+            if(teclaPresionada.Key == ConsoleKey.W || teclaPresionada.Key == ConsoleKey.UpArrow){
+                if(ficha.Posicion.x>0 && Board.board[ficha.Posicion.x - 1, ficha.Posicion.y] != "w"){
+                    ficha.Posicion.x--;
+                    break;
+                }
+                else{
+                    Console.WriteLine("Movimiento no valido");
+                }
+            }
+            if(teclaPresionada.Key == ConsoleKey.A || teclaPresionada.Key == ConsoleKey.LeftArrow){
+                if(ficha.Posicion.y>0 && Board.board[ficha.Posicion.x - 1, ficha.Posicion.y] != "w"){
+                    ficha.Posicion.y--;
+                    break;
+                }
+                else{
+                    Console.WriteLine("Movimiento no valido");
+                }
+            }
+            if(teclaPresionada.Key == ConsoleKey.S || teclaPresionada.Key == ConsoleKey.DownArrow){
+                if(ficha.Posicion.x<19 && Board.board[ficha.Posicion.x - 1, ficha.Posicion.y] != "w"){
+                    ficha.Posicion.x++;
+                    break;
+                }
+                else{
+                    Console.WriteLine("Movimiento no valido");
+                }
+            }
+            if(teclaPresionada.Key == ConsoleKey.D || teclaPresionada.Key == ConsoleKey.RightArrow){
+                if(ficha.Posicion.y<19 && Board.board[ficha.Posicion.x - 1, ficha.Posicion.y] != "w"){
+                    ficha.Posicion.y++;
+                    break;
+                }
+                else{
+                    Console.WriteLine("Movimiento no valido");
+                }
+            }
+        }
+
+        
 
     }
 
     public static bool IsWinning(){
-        return true;
+        foreach(Player jugador in Player.jugadores){
+            foreach(Ficha fichaSeleccionada in jugador.SelectedFichas){
+                if(fichaSeleccionada.Posicion.x == 9 && fichaSeleccionada.Posicion.y==9){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
+    public static void WindVelocity(Ficha ficha){
+        string[] wind_directions = {"norte", "sur","este","oeste"};
+        int index = rand.Next(wind_directions.Length);
+        string wind_direction = wind_directions[index];
+
+        if(wind_direction == "norte"){
+            ficha.Velocidad += 2;
+            
+            for (int i = 0; i < ficha.Velocidad; i++){
+                if (ficha.Posicion.x > 0 && Board.board[ficha.Posicion.x - 1, ficha.Posicion.y] != "p"){
+                    ficha.Posicion.x--; 
+                }
+                else{
+                    Console.WriteLine("Movimiento no válido");
+                    break; 
+                }
+            }
+        }
+
+        if(wind_direction == "sur"){
+            ficha.Velocidad += 2;
+            
+            for (int i = 0; i < ficha.Velocidad; i++){
+                if (ficha.Posicion.y < 19 && Board.board[ficha.Posicion.x - 1, ficha.Posicion.y] != "p"){
+                    ficha.Posicion.y++; 
+                }
+                else{
+                    Console.WriteLine("Movimiento no válido");
+                    break; 
+                }
+            }
+
+        }
+
+        if(wind_direction == "este"){
+            ficha.Velocidad += 2;
+            
+            for (int i = 0; i < ficha.Velocidad; i++){
+                if (ficha.Posicion.x<19 && Board.board[ficha.Posicion.x - 1, ficha.Posicion.y] != "p"){
+                    ficha.Posicion.x++; 
+                }
+                else{
+                    Console.WriteLine("Movimiento no válido");
+                    break; 
+                }
+            }
+
+        }
+
+        if(wind_direction == "oeste"){
+            ficha.Velocidad += 2;
+            
+            for (int i = 0; i < ficha.Velocidad; i++){
+                if (ficha.Posicion.y > 0 && Board.board[ficha.Posicion.x - 1, ficha.Posicion.y] != "p"){
+                    ficha.Posicion.y--; 
+                }
+                else{
+                    Console.WriteLine("Movimiento no válido");
+                    break; 
+                }
+            }
+
+        }
+        
+    }
+
+    public static void Fly(){
+
+    }
+    public static void Star(){
+
+    }
+    public static void Shade(){
+
+    }
+    public static void Eclipse(){
+
+    }
+    public static void Storm(){
+
+    }
+
+
+
+// viento: resbala 3/5 casillas en direccion del viento
+// ala: rebasa 1 obstaculo
+// estrella: rompe 1 obstaculo
+// neblina: nubla un area
+// eclipse: toma control de la habilidad de la ficha enemiga 
+// tormenta: crea un paralizante temporal
 
 }
 
@@ -311,19 +456,16 @@ public class Trampa{
             }
         }
     }   
-}
 
-public class Habilidades{
 // copo de nieve (trampa): congelar por 3 turnos
 // lluvia (trampa): resbalar y retroceder 5 casillas
 // rayo (trampa): paralizar un area cercana
-// viento: resbala 3/5 casillas en direccion del viento
-// ala: rebasa 1 obstaculo
-// estrella: rompe 1 obstaculo
-// neblina: nubla un area
-// eclipse: toma control de la habilidad de la ficha enemiga 
-// tormenta: crea un paralizante temporal
 }
+
+
+
+
+
 
 
 
