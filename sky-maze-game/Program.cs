@@ -3,6 +3,8 @@ using sky_maze_game.GameLogic;
 
 class Program
 {
+    private static int turnosPorJugador = 0;
+
     public static void Main()
     {
         GameUI.Start();
@@ -41,8 +43,39 @@ class Program
         Trampa.TrampaGenerator();
         Ficha.FichaInitializer(Player.jugadores);
         GameUI.PrintBoard();
-        //while(posiciondeljugador !=winning_position){
+        
 
-        //}
-    }  
+        while(!Ficha.IsWinning()){
+
+            foreach(Player jugadorActual in Player.jugadores){
+                Console.WriteLine($"{jugadorActual.Nombre} es tu turno. Selecciona el numero de la ficha correspondiente");
+
+                for (int j = 0; j < jugadorActual.SelectedFichas.Count; j++){
+                    Ficha ficha = jugadorActual.SelectedFichas[j];
+                    Console.WriteLine($"{j + 1}- {ficha.Nombre} ({ficha.Simbolo})");
+                }
+
+                Ficha playFicha = null;
+                while(playFicha==null){
+                    int index = int.Parse(Console.ReadLine());
+                    if(index>0 && index <= jugadorActual.SelectedFichas.Count){
+                        playFicha = jugadorActual.SelectedFichas[index - 1];
+                        Console.WriteLine($"Ha elegido {playFicha.Nombre}");
+                    }
+                    else{
+                        Console.WriteLine("Ficha invalida. Intente nuevamente");
+                    }
+                    Console.WriteLine("Ahora muevase en la direccion deseada usando los controles");
+                    Ficha.Movement(playFicha);
+                    Console.Clear();
+                    GameUI.PrintBoard();
+                    Program.turnosPorJugador++;
+                }
+            }
+                
+        }
+        Program.turnosPorJugador = 0;   
+        Console.Clear();
+        //Console.WriteLine($"Felicidades! Ha ganado {Player.jugadores[i]}");
+    }
 }

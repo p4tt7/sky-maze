@@ -67,7 +67,6 @@ public class GameLogic{
 public class Board{
     public static int dimension = 20;
     public static string[,] board = new string[dimension,dimension];
-    public static string winning_position = board[10,10];
     public static int[,] direcciones = {{0,-1},{0,1},{-1,0},{1,0}};
 
 
@@ -92,8 +91,8 @@ public class Board{
 
         for (int i = 0; i < 4; i++){
             int directionIndex = indices[i];
-            int newRow = currentRow + direcciones[directionIndex, 0] * 2;
-            int newCol = currentCol + direcciones[directionIndex, 1] * 2;
+            int newRow = currentRow+direcciones[directionIndex, 0]*2;
+            int newCol = currentCol+direcciones[directionIndex, 1]*2;
 
             if (newRow >= 0 && newRow < board.GetLength(0) && newCol >= 0 && newCol < board.GetLength(1) && board[newRow, newCol] == "w"){
                 
@@ -109,7 +108,7 @@ public class Board{
         int n = indices.Length;
         Random rand = new Random();
 
-        for (int i = n - 1; i > 0; i--){
+        for (int i=n-1; i>0;i--){
     
             int j = rand.Next(0, i + 1);
 
@@ -167,7 +166,6 @@ public class Board{
         else{
             return false;
         }
-
     }
 
     public static void ValidatedBoard(string[,] board, int[,] distancias){
@@ -229,12 +227,12 @@ public class Ficha{
     public static Random rand = new Random();
 
     public static List<Ficha> FichasDisponibles = new List<Ficha>{
-    new Ficha {Nombre = "Tornado" , Simbolo = "🌪️" , Velocidad = 3},
-    new Ficha {Nombre = "Neblina" , Simbolo = "🌫️" , Velocidad = 1},
-    new Ficha {Nombre = "Viento" , Simbolo = "🌬️" , Velocidad = 1},
-    new Ficha {Nombre = "Ala" , Simbolo = "🪽" , Velocidad = 2},
-    new Ficha {Nombre = "Estrella" , Simbolo = "⭐" , Velocidad = 3},
-    new Ficha {Nombre = "Eclipse" , Simbolo = "🌑" , Velocidad = 3},
+    new Ficha {Nombre = "Arcoiris" , Simbolo = "🌈" , Velocidad = 2 , CoolingTime = 3},
+    new Ficha {Nombre = "Neblina" , Simbolo = "🌫️" , Velocidad = 1 , CoolingTime = 2},
+    new Ficha {Nombre = "Viento" , Simbolo = "🌬️" , Velocidad = 1 , CoolingTime = 3},
+    new Ficha {Nombre = "Ala" , Simbolo = "🪽" , Velocidad = 2 , CoolingTime = 3},
+    new Ficha {Nombre = "Estrella" , Simbolo = "⭐" , Velocidad = 3 , CoolingTime = 6},
+    new Ficha {Nombre = "Eclipse" , Simbolo = "🌑" , Velocidad = 3 , CoolingTime = 10},
     };
 
     public static void FichaInitializer(List<Player> jugadores){
@@ -254,49 +252,54 @@ public class Ficha{
     public static void Movement(Ficha ficha){
 
         int pasos = ficha.Velocidad;
-        ConsoleKeyInfo teclaPresionada = Console.ReadKey();
 
         for(int i=0;i<pasos;i++){
+            ConsoleKeyInfo teclaPresionada = Console.ReadKey();
+            Board.board[ficha.Posicion.x, ficha.Posicion.y] = "c";
+
             if(teclaPresionada.Key == ConsoleKey.W || teclaPresionada.Key == ConsoleKey.UpArrow){
                 if(ficha.Posicion.x>0 && Board.board[ficha.Posicion.x - 1, ficha.Posicion.y] != "w"){
                     ficha.Posicion.x--;
-                    break;
                 }
                 else{
                     Console.WriteLine("Movimiento no valido");
+                    continue;
                 }
             }
-            if(teclaPresionada.Key == ConsoleKey.A || teclaPresionada.Key == ConsoleKey.LeftArrow){
-                if(ficha.Posicion.y>0 && Board.board[ficha.Posicion.x - 1, ficha.Posicion.y] != "w"){
+                
+            else if(teclaPresionada.Key == ConsoleKey.A || teclaPresionada.Key == ConsoleKey.LeftArrow){
+                if(ficha.Posicion.y>0 && Board.board[ficha.Posicion.x, ficha.Posicion.y-1] != "w"){
                     ficha.Posicion.y--;
-                    break;
                 }
                 else{
                     Console.WriteLine("Movimiento no valido");
+                    continue;
                 }
             }
-            if(teclaPresionada.Key == ConsoleKey.S || teclaPresionada.Key == ConsoleKey.DownArrow){
-                if(ficha.Posicion.x<19 && Board.board[ficha.Posicion.x - 1, ficha.Posicion.y] != "w"){
+            else if(teclaPresionada.Key == ConsoleKey.S || teclaPresionada.Key == ConsoleKey.DownArrow){
+                if(ficha.Posicion.x<19 && Board.board[ficha.Posicion.x + 1, ficha.Posicion.y] != "w"){
                     ficha.Posicion.x++;
-                    break;
                 }
                 else{
                     Console.WriteLine("Movimiento no valido");
+                    continue;
                 }
             }
-            if(teclaPresionada.Key == ConsoleKey.D || teclaPresionada.Key == ConsoleKey.RightArrow){
-                if(ficha.Posicion.y<19 && Board.board[ficha.Posicion.x - 1, ficha.Posicion.y] != "w"){
+            else if(teclaPresionada.Key == ConsoleKey.D || teclaPresionada.Key == ConsoleKey.RightArrow){
+                if(ficha.Posicion.y<19 && Board.board[ficha.Posicion.x, ficha.Posicion.y+1] != "w"){
                     ficha.Posicion.y++;
-                    break;
                 }
                 else{
                     Console.WriteLine("Movimiento no valido");
+                    continue;
                 }
             }
+            else{
+                Console.WriteLine("Tecla no reconocida");
+            }
+ 
+            Board.board[ficha.Posicion.x, ficha.Posicion.y] = ficha.Simbolo;
         }
-
-        
-
     }
 
     public static bool IsWinning(){
@@ -315,7 +318,7 @@ public class Ficha{
         int index = rand.Next(wind_directions.Length);
         string wind_direction = wind_directions[index];
 
-        if(wind_direction == "norte"){
+        if(wind_direction == "oeste"){
             ficha.Velocidad += 2;
             
             for (int i = 0; i < ficha.Velocidad; i++){
@@ -341,7 +344,6 @@ public class Ficha{
                     break; 
                 }
             }
-
         }
 
         if(wind_direction == "este"){
@@ -356,13 +358,12 @@ public class Ficha{
                     break; 
                 }
             }
-
         }
 
-        if(wind_direction == "oeste"){
+        if(wind_direction == "norte"){
             ficha.Velocidad += 2;
             
-            for (int i = 0; i < ficha.Velocidad; i++){
+            for (int i = 0; i<ficha.Velocidad; i++){
                 if (ficha.Posicion.y > 0 && Board.board[ficha.Posicion.x - 1, ficha.Posicion.y] != "p"){
                     ficha.Posicion.y--; 
                 }
@@ -371,37 +372,139 @@ public class Ficha{
                     break; 
                 }
             }
+        }   
+    }
+
+    public static void Fly(Ficha ficha){
+
+        int pasos = 2;
+        ConsoleKeyInfo teclaPresionada = Console.ReadKey();
+
+        for(int i=0;i<pasos;i++){
+            if(teclaPresionada.Key == ConsoleKey.W || teclaPresionada.Key == ConsoleKey.UpArrow){
+                if(ficha.Posicion.x>0){
+                    ficha.Posicion.x--;
+                    break;
+                }
+                else{
+                    Console.WriteLine("Movimiento no valido");
+                }
+            }
+            if(teclaPresionada.Key == ConsoleKey.A || teclaPresionada.Key == ConsoleKey.LeftArrow){
+                if(ficha.Posicion.y>0){
+                    ficha.Posicion.y--;
+                    break;
+                }
+                else{
+                    Console.WriteLine("Movimiento no valido");
+                }
+            }
+            if(teclaPresionada.Key == ConsoleKey.S || teclaPresionada.Key == ConsoleKey.DownArrow){
+                if(ficha.Posicion.x<19){
+                    ficha.Posicion.x++;
+                    break;
+                }
+                else{
+                    Console.WriteLine("Movimiento no valido");
+                }
+            }
+            if(teclaPresionada.Key == ConsoleKey.D || teclaPresionada.Key == ConsoleKey.RightArrow){
+                if(ficha.Posicion.y<19){
+                    ficha.Posicion.y++;
+                    break;
+                }
+                else{
+                    Console.WriteLine("Movimiento no valido");
+                }
+            }
+        }
+    }
+  
+    public static void Eclipse(Ficha ficha){
+        Console.WriteLine("Introduzca el nombre de la habilidad a copiar");
+
+        foreach(Player jugador in Player.jugadores){
+            foreach(Ficha fichaSeleccionada in jugador.SelectedFichas){
+                Console.WriteLine($"{fichaSeleccionada.Nombre} {fichaSeleccionada.Simbolo}");
+            }
+        }
+        string habilidad = Console.ReadLine();
+
+
+        if(habilidad=="Arcoiris"){
+            Rainbow(ficha);
 
         }
-        
+
+        if(habilidad=="Viento"){
+            WindVelocity(ficha);
+
+        }
+
+        if(habilidad=="Ala"){
+            Fly(ficha);
+
+        }
+
+        if(habilidad=="Estrella"){
+            Star(ficha);
+
+        }
+
+        if(habilidad=="Eclipse"){
+            Console.WriteLine("Habilidad ya adquirida! Intente con otra!");
+
+        }
+
+        else{
+            Console.WriteLine("Nombre incorrecto. Vueva a intentarlo");
+        }
+
     }
 
-    public static void Fly(){
-
-    }
-    public static void Star(){
-
-    }
-    public static void Shade(){
-
-    }
-    public static void Eclipse(){
-
-    }
-    public static void Storm(){
-
+    
+    public static void Rainbow(Ficha ficha){
+        int[] dr = { -1, 1, 0, 0 };
+        int[] dc = { 0, 0, -1, 1 };
     }
 
 
+    public static void Star(Ficha ficha){
+        int pasos = ficha.Velocidad; 
+        int x = ficha.Posicion.x;
+        int y = ficha.Posicion.y;
 
-// viento: resbala 3/5 casillas en direccion del viento
-// ala: rebasa 1 obstaculo
-// estrella: rompe 1 obstaculo
-// neblina: nubla un area
-// eclipse: toma control de la habilidad de la ficha enemiga 
-// tormenta: crea un paralizante temporal
+        for (int i=0; i<pasos; i++){
 
+            if (x > 0 && Board.board[x-1,y] == "w"){ 
+                Board.board[x-1,y] = "c"; 
+                x--;
+            }
+
+            else if (x < 19 && Board.board[x+1,y] == "w"){
+                Board.board[x+1,y] = "c"; 
+                x++;
+            }
+
+            else if (y > 0 && Board.board[x,y-1] == "w"){
+                Board.board[x,y-1] = "c"; 
+                y--; 
+            }
+
+            else if (y < 19 && Board.board[x,y+1] == "w"){
+                Board.board[x,y+1] = "c"; 
+                y++;
+            }
+
+            else{
+                break; 
+            }
+
+        //ficha.Posicion = new Posicion.x , Posicion.y;
+        }
+    }
 }
+
 
 public class Player{
     public string Nombre {get; set;}
@@ -428,7 +531,8 @@ public class Obstacule{
         for(int i=0;i<Board.dimension;i++){
             for(int j=0;j<Board.dimension;j++){
                 if(Board.board[i,j]=="c" && random.NextDouble()<0.05){
-                    Board.board[i,j]="o";
+                    int indexObstacule = Obstacule.random.Next(0,Obstacule.Obstaculos.Count);
+                    Board.board[i,j] = Obstacule.Obstaculos[indexObstacule].Simbolo;
                 }
             }
         }
@@ -451,16 +555,31 @@ public class Trampa{
         for(int i=0;i<Board.dimension;i++){
             for(int j=0;j<Board.dimension;j++){
                 if(Board.board[i,j]=="c" && random.NextDouble()<0.05){
-                    Board.board[i,j]="t";
+                    int indexTrampa = Trampa.random.Next(0, Trampa.Trampas.Count);
+                    Board.board[i,j] = Trampa.Trampas[indexTrampa].Simbolo;
                 }
             }
         }
-    }   
+    }  
 
-// copo de nieve (trampa): congelar por 3 turnos
-// lluvia (trampa): resbalar y retroceder 5 casillas
-// rayo (trampa): paralizar un area cercana
+    public static void Snowflake(){
+        // copo de nieve (trampa): congelar por 3 turnos
+
+    } 
+
+    public static void Rain(){
+        // lluvia (trampa): resbalar y retroceder 5 casillas
+
+    }
+
+    public static void Rayo(){
+        // rayo (trampa): paralizar un area cercana
+
+    }
+
 }
+
+
 
 
 

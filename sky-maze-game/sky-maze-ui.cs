@@ -33,7 +33,7 @@ public class GameUI
             for(int j = 0; j < Board.dimension; j++)
             {
                 
-                if (i == 9 && j == 9){
+                if (i == 9 && j == 9 && Board.board[i,j]=="c"){ //posicion ganadora y es camino
                     Console.Write("🟨"); 
                 }
 
@@ -46,19 +46,10 @@ public class GameUI
                 {
                     Console.Write("⬜");
                 }
-                
-                else if(Board.board[i, j]=="t"){ //trampa
-                    int indexTrampa = Trampa.random.Next(0, Trampa.Trampas.Count);
-                    Console.Write(Trampa.Trampas[indexTrampa].Simbolo);
-                }
-
-                else if(Board.board[i,j]=="o"){
-                    int indexObstacule = Obstacule.random.Next(0,Obstacule.Obstaculos.Count);
-                    Console.Write(Obstacule.Obstaculos[indexObstacule].Simbolo);
-                }
+    
 
                 else{
-                    Console.Write(Board.board[i,j]);     
+                    Console.Write(Board.board[i,j]); //ficha, trampa y obstaculo
                 }
             }
             Console.WriteLine();
