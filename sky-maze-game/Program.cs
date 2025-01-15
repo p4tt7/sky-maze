@@ -34,10 +34,9 @@ class Program
     }
 
     public static void Game(){
-        GameLogic.SelectionMenu();
+        GameLogic.SelectionMenu();    
         Board.BoardInitializer();
         Board.BoardGenerator();
-        Obstacule.ObstaculeGenerator();
         int[,] distancias = Board.DistanceValidator(Board.board, 0, 0);
         Board.ValidatedBoard(Board.board, distancias);
         Trampa.TrampaGenerator();
@@ -45,37 +44,77 @@ class Program
         GameUI.PrintBoard();
         
 
-        while(!Ficha.IsWinning()){
+        bool seguirJugando = true;
 
-            foreach(Player jugadorActual in Player.jugadores){
-                Console.WriteLine($"{jugadorActual.Nombre} es tu turno. Selecciona el numero de la ficha correspondiente");
+    while (seguirJugando && !Position.IsWinning())
+    {
+        foreach (Player jugadorActual in Player.jugadores)
+        {
+            Console.WriteLine($"{jugadorActual.Nombre}, es tu turno. Selecciona el número de la ficha correspondiente");
 
-                for (int j = 0; j < jugadorActual.SelectedFichas.Count; j++){
-                    Ficha ficha = jugadorActual.SelectedFichas[j];
-                    Console.WriteLine($"{j + 1}- {ficha.Nombre} ({ficha.Simbolo})");
+            for (int j = 0; j < jugadorActual.SelectedFichas.Count; j++)
+            {
+                Ficha ficha = jugadorActual.SelectedFichas[j];
+                Console.WriteLine($"{j + 1}- {ficha.Nombre} ({ficha.Simbolo})");
+            }
+
+            Ficha playFicha = null;
+
+            while (playFicha == null)
+            {
+                string input = Console.ReadLine();
+                if (input == "salir")
+                {
+                    Console.WriteLine("Saliendo del juego. ¡Gracias por jugar!");
+                    seguirJugando = false;
+                    break;
+                }
+                else if (input == "reiniciar")
+                {
+                    Console.WriteLine("Reiniciando el juego...");
+                    return; 
+                }
+                else if (int.TryParse(input, out int index) && index > 0 && index <= jugadorActual.SelectedFichas.Count)
+                {
+                    playFicha = jugadorActual.SelectedFichas[index - 1];
+                    Console.WriteLine($"Ha elegido {playFicha.Nombre}");
+                }
+                else
+                {
+                    Console.WriteLine("Entrada inválida. Intenta nuevamente");
+                    continue;
                 }
 
-                Ficha playFicha = null;
-                while(playFicha==null){
-                    int index = int.Parse(Console.ReadLine());
-                    if(index>0 && index <= jugadorActual.SelectedFichas.Count){
-                        playFicha = jugadorActual.SelectedFichas[index - 1];
-                        Console.WriteLine($"Ha elegido {playFicha.Nombre}");
+                bool movimientoCompletado = false;
+
+                while (!movimientoCompletado)
+                {
+                    Console.WriteLine("Ahora muévase en la dirección deseada usando W (Arriba), A (Izquierda), S (Abajo), D (Derecha). Presiona X para usar la habilidad de la ficha o 'salir' para salir del juego.");
+                    ConsoleKeyInfo key = Console.ReadKey(true);
+
+                    if (key.Key == ConsoleKey.X)
+                    {
+                        Ficha.UseHabilidad(playFicha);
+                        GameUI.PrintBoard();
                     }
-                    else{
-                        Console.WriteLine("Ficha invalida. Intente nuevamente");
+                
+                    else
+                    {
+                        Position.Movement(playFicha);
+                        GameUI.PrintBoard();
+                        movimientoCompletado = true;
                     }
-                    Console.WriteLine("Ahora muevase en la direccion deseada usando los controles");
-                    Ficha.Movement(playFicha);
-                    Console.Clear();
-                    GameUI.PrintBoard();
-                    Program.turnosPorJugador++;
                 }
             }
-                
         }
-        Program.turnosPorJugador = 0;   
+    }
+
+    if (Position.IsWinning())
+    {
         Console.Clear();
-        //Console.WriteLine($"Felicidades! Ha ganado {Player.jugadores[i]}");
+        Console.WriteLine($"¡Felicidades! Has ganado el juego.");
+    }
+    Program.turnosPorJugador = 0;  
+
     }
 }

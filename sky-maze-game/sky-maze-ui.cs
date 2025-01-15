@@ -33,7 +33,7 @@ public class GameUI
             for(int j = 0; j < Board.dimension; j++)
             {
                 
-                if (i == 9 && j == 9 && Board.board[i,j]=="c"){ //posicion ganadora y es camino
+                if (i == 9 && j == 9){ //posicion ganadora 
                     Console.Write("🟨"); 
                 }
 
