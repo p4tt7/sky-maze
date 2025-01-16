@@ -1,5 +1,6 @@
 ﻿using sky_maze_game.GameUI;
 using sky_maze_game.GameLogic;
+using Spectre.Console;
 
 class Program
 {
@@ -7,6 +8,7 @@ class Program
 
     public static void Main()
     {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
         GameUI.Start();
         while(true)
         {
