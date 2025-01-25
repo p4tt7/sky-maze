@@ -1,6 +1,7 @@
 ﻿using sky_maze_game.GameUI;
 using sky_maze_game.GameLogic;
 using Spectre.Console;
+using System.ComponentModel.DataAnnotations;
 
 class Program
 {
@@ -9,114 +10,124 @@ class Program
     public static void Main()
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
+        GameUI.IntroAnimation();
         GameUI.Start();
-        while(true)
+
+        while (true)
         {
             string? state = Console.ReadLine();
             if (string.IsNullOrEmpty(state))
-            {  
+            {
                 Console.WriteLine("Entrada no válida. Por favor, introduce un número.");
             }
 
             if (state == "1")
             {
-                Console.WriteLine("Iniciando juego...");
-                System.Threading.Thread.Sleep(1000);
                 Console.Clear();
-                Game();        
-            }
+                Console.WriteLine("Iniciando juego...");
+                System.Threading.Thread.Sleep(2000);
+                Console.Clear();
 
-            else if (state == "0")
-            {
-                Console.WriteLine("Saliendo del juego");
+                GameUI.Presentation();
+                ConsoleKeyInfo tecla = Console.ReadKey(true);
+                if (tecla.Key == ConsoleKey.Enter)
+                {
+                    Console.Clear();
+                    Juego();
+                }
+                else if (state == "0")
+                {
+                    Console.WriteLine("Saliendo del juego");
+                    break;
+                }
                 break;
             }
-        } 
-        
+        }
     }
 
-    public static void Game(){
-        GameLogic.SelectionMenu();    
-        Board.BoardInitializer();
+    public static void Juego()
+    {
+        GameLogic.SelectionMenu();
+        Console.WriteLine("Cargando...");
+        Console.Clear();
+        System.Threading.Thread.Sleep(2000);
         Board.BoardGenerator();
         int[,] distancias = Board.DistanceValidator(Board.board, 0, 0);
         Board.ValidatedBoard(Board.board, distancias);
         Trampa.TrampaGenerator();
         Ficha.FichaInitializer(Player.jugadores);
         GameUI.PrintBoard();
-        
 
-        bool seguirJugando = true;
+        int turno = 0;
 
-    while (seguirJugando && !Position.IsWinning())
-    {
-        foreach (Player jugadorActual in Player.jugadores)
+        while (!Position.IsWinning())
         {
-            Console.WriteLine($"{jugadorActual.Nombre}, es tu turno. Selecciona el número de la ficha correspondiente");
 
-            for (int j = 0; j < jugadorActual.SelectedFichas.Count; j++)
+            foreach (Player jugador in Player.jugadores)
             {
-                Ficha ficha = jugadorActual.SelectedFichas[j];
-                Console.WriteLine($"{j + 1}- {ficha.Nombre} ({ficha.Simbolo})");
+                AnsiConsole.Markup($"[cyan]Jugador {jugador.Nombre}, es tu turno\n[/]");
+                AnsiConsole.Markup($"[cyan]Presione ENTER para comenzar, o X para activar su habilidad\n[/]");
+
+                int cooldownRestante = 0;
+
+                while (true)
+                {
+                    ConsoleKeyInfo teclaPresionada = Console.ReadKey(true);
+
+                    if (teclaPresionada.Key == ConsoleKey.Enter)
+                    {
+                        int steps = jugador.selectedFicha.Velocidad;
+
+                        while (steps > 0)
+                        {
+                            Position.Movement(jugador.selectedFicha);
+                            Position position = jugador.selectedFicha.Posicion;
+
+                            if (Position.IsTrampa(jugador.selectedFicha, position.x, position.y))
+                            {
+                                for (int t = 0; t < Trampa.PosicionesTrampas.Count; t++)
+                                {
+                                    if (Trampa.PosicionesTrampas[t].x == position.x && Trampa.PosicionesTrampas[t].y == position.y)
+                                    {
+                                        Trampa.ActivateTrampa(jugador.selectedFicha, Trampa.Trampas[t]);
+                                        AnsiConsole.Markup("\n[red]¡Ha caído en una trampa![/]\n");
+                                        break;
+                                    }
+                                }
+                            }
+
+                            steps--;
+                        }
+
+                        break;  
+                    }
+
+                    if (teclaPresionada.Key == ConsoleKey.X)
+                    {
+                        if (cooldownRestante == 0)
+                        {
+                            Ficha.UseHabilidad(jugador.selectedFicha);
+                            cooldownRestante = jugador.selectedFicha.CoolingTime;
+                        }
+                        else
+                        {
+                            AnsiConsole.Markup($"[red]Habilidad en enfriamiento, espera {cooldownRestante} turnos más.[/]\n");
+                        }
+                    }
+
+                    if (cooldownRestante > 0)
+                    {
+                        cooldownRestante--;
+                    }
+                }
+
+                turno++;  
+                Console.Clear();  
+                GameUI.PrintBoard();
             }
 
-            Ficha playFicha = null;
-
-            while (playFicha == null)
-            {
-                string input = Console.ReadLine();
-                if (input == "salir")
-                {
-                    Console.WriteLine("Saliendo del juego. ¡Gracias por jugar!");
-                    seguirJugando = false;
-                    break;
-                }
-                else if (input == "reiniciar")
-                {
-                    Console.WriteLine("Reiniciando el juego...");
-                    return; 
-                }
-                else if (int.TryParse(input, out int index) && index > 0 && index <= jugadorActual.SelectedFichas.Count)
-                {
-                    playFicha = jugadorActual.SelectedFichas[index - 1];
-                    Console.WriteLine($"Ha elegido {playFicha.Nombre}");
-                }
-                else
-                {
-                    Console.WriteLine("Entrada inválida. Intenta nuevamente");
-                    continue;
-                }
-
-                bool movimientoCompletado = false;
-
-                while (!movimientoCompletado)
-                {
-                    Console.WriteLine("Ahora muévase en la dirección deseada usando W (Arriba), A (Izquierda), S (Abajo), D (Derecha). Presiona X para usar la habilidad de la ficha o 'salir' para salir del juego.");
-                    ConsoleKeyInfo key = Console.ReadKey(true);
-
-                    if (key.Key == ConsoleKey.X)
-                    {
-                        Ficha.UseHabilidad(playFicha);
-                        GameUI.PrintBoard();
-                    }
-                
-                    else
-                    {
-                        Position.Movement(playFicha);
-                        GameUI.PrintBoard();
-                        movimientoCompletado = true;
-                    }
-                }
-            }
+            GameUI.WinArt(); 
         }
-    }
-
-    if (Position.IsWinning())
-    {
-        Console.Clear();
-        Console.WriteLine($"¡Felicidades! Has ganado el juego.");
-    }
-    Program.turnosPorJugador = 0;  
 
     }
 }
