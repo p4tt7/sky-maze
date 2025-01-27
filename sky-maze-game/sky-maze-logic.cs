@@ -103,13 +103,13 @@ public class GameLogic
         switch (dificultad)
         {
             case 1:
-                Board.dimension = 10;
+                Board.dimension = 13;
                 break;
             case 2:
-                Board.dimension = 16;
+                Board.dimension = 15;
                 break;
             case 3:
-                Board.dimension = 20;
+                Board.dimension = 19;
                 break;
         }
         Board.BoardInitializer();

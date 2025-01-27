@@ -37,13 +37,13 @@ public class Trampa
 
         switch (Board.dimension)
         {
-            case 10: // FACIL
+            case 13: // FACIL
                 probabilidadTrampa = 0.02;
                 break;
-            case 16: // INTERMEDIO
+            case 15: // INTERMEDIO
                 probabilidadTrampa = 0.05;
                 break;
-            case 20: // DIFICIL
+            case 19: // DIFICIL
                 probabilidadTrampa = 0.07;
                 break;
         }
@@ -124,7 +124,7 @@ public class Trampa
         {
             AnsiConsole.Markup("[blue]La lluvia te mojó, pero mantuviste el equilibrio.[/]");
         }
-        
+
         string GetDirectionString(int direction)
         {
             switch (direction)

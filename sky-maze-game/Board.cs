@@ -3,7 +3,7 @@ namespace sky_maze_game.GameLogic;
 public class Board
 {
     public static int dimension;
-    public static int center => dimension/2;
+    public static int center = dimension/2;
     public static string[,] board;
     public static int[,] direcciones = { { 0, -1 }, { 0, 1 }, { -1, 0 }, { 1, 0 } };
 

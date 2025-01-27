@@ -104,7 +104,7 @@ public class GameUI
                 {
                     symbol = "🟦";
                 }
-                if (Board.board[i, j] == "c") // Camino
+                else if (Board.board[i, j] == "c") // Camino
                 {
                     symbol = "  ";
                 }
