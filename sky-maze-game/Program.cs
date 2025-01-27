@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations;
 
 class Program
 {
-    private static int turnosPorJugador = 0;
 
     public static void Main()
     {
@@ -56,21 +55,25 @@ class Program
         Board.ValidatedBoard(Board.board, distancias);
         Trampa.TrampaGenerator();
         Ficha.FichaInitializer(Player.jugadores);
-        GameUI.PrintBoard();
+        GameUI.PrintBoard();  // Imprime el tablero al inicio del juego
 
+        bool playing = true;
         int turno = 0;
 
-        while (!Position.IsWinning())
+        while (playing)
         {
-
             foreach (Player jugador in Player.jugadores)
             {
                 AnsiConsole.Markup($"[cyan]Jugador {jugador.Nombre}, es tu turno\n[/]");
-                AnsiConsole.Markup($"[cyan]Presione ENTER para comenzar, o X para activar su habilidad\n[/]");
+
+                Ficha.ApplyTrapEffects(jugador.selectedFicha);
+
+                AnsiConsole.Markup($"[cyan]Presione ENTER para comenzar tu movimiento, o X para activar su habilidad\n[/]");
 
                 int cooldownRestante = 0;
+                bool playerTurnOver = false;
 
-                while (true)
+                while (!playerTurnOver)
                 {
                     ConsoleKeyInfo teclaPresionada = Console.ReadKey(true);
 
@@ -78,9 +81,9 @@ class Program
                     {
                         int steps = jugador.selectedFicha.Velocidad;
 
-                        while (steps > 0)
+                        for (int step = 0; step < steps; step++)
                         {
-                            Position.Movement(jugador.selectedFicha);
+                            AnsiConsole.Markup($"[yellow]Tienes {steps-step} [/]\n");
                             Position position = jugador.selectedFicha.Posicion;
 
                             if (Position.IsTrampa(jugador.selectedFicha, position.x, position.y))
@@ -95,11 +98,19 @@ class Program
                                     }
                                 }
                             }
+                            Position.Movement(jugador.selectedFicha);
 
-                            steps--;
+                            Console.Clear();
+                            GameUI.PrintBoard();
+
+                            if (Position.IsWinning())
+                            {
+                                playing = false;
+                                playerTurnOver = true;
+                                break;
+                            }
                         }
-
-                        break;  
+                        playerTurnOver = true;  
                     }
 
                     if (teclaPresionada.Key == ConsoleKey.X)
@@ -108,11 +119,13 @@ class Program
                         {
                             Ficha.UseHabilidad(jugador.selectedFicha);
                             cooldownRestante = jugador.selectedFicha.CoolingTime;
+                            AnsiConsole.Markup($"[cyan]Habilidad activada, espera {cooldownRestante} turnos para usarla nuevamente.[/]\n");
                         }
                         else
                         {
                             AnsiConsole.Markup($"[red]Habilidad en enfriamiento, espera {cooldownRestante} turnos más.[/]\n");
                         }
+                        playerTurnOver = true; 
                     }
 
                     if (cooldownRestante > 0)
@@ -121,13 +134,21 @@ class Program
                     }
                 }
 
-                turno++;  
-                Console.Clear();  
+                if (!playing){
+                    break;
+
+                } 
+
+                turno++;
+                Console.Clear();
                 GameUI.PrintBoard();
             }
-
-            GameUI.WinArt(); 
+            if (!playing){
+                break; 
+            } 
         }
-
+        Console.Clear();
+        GameUI.WinArt();
     }
+
 }
