@@ -100,11 +100,7 @@ public class GameUI
                     }
                 }
 
-                if (i == Board.center && j == Board.center) // Posición ganadora 
-                {
-                    symbol = "🟦";
-                }
-                else if (Board.board[i, j] == "c") // Camino
+                if (Board.board[i, j] == "c") // Camino
                 {
                     symbol = "  ";
                 }

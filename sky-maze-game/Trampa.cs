@@ -38,13 +38,13 @@ public class Trampa
         switch (Board.dimension)
         {
             case 13: // FACIL
-                probabilidadTrampa = 0.02;
-                break;
-            case 15: // INTERMEDIO
                 probabilidadTrampa = 0.05;
                 break;
-            case 19: // DIFICIL
+            case 15: // INTERMEDIO
                 probabilidadTrampa = 0.07;
+                break;
+            case 19: // DIFICIL
+                probabilidadTrampa = 0.09;
                 break;
         }
 
@@ -93,13 +93,13 @@ public class Trampa
     {
         ficha.Estado = Ficha.State.Congelado;
         ficha.Velocidad = -3;
-        AnsiConsole.Markup("[cyan]Estás congelado, no puedes moverte por 3 turnos.[/]");
+        AnsiConsole.Markup("\n[cyan]Estás congelado, no puedes moverte por 3 turnos.\n[/]");
     }
 
     public static void Rain(Ficha ficha)
     {
         ficha.Estado = Ficha.State.Mojado;
-        AnsiConsole.Markup("[blue]Estás mojado, cuidado con resbalar.[/]");
+        AnsiConsole.Markup("\n[blue]Estás mojado, cuidado con resbalar.[/]\n");
 
         if (Ficha.rand.Next(0, 2) == 0) 
         {
@@ -116,13 +116,13 @@ public class Trampa
                 ficha.Posicion = new Position(newX, newY); 
                 Board.board[newX, newY] = ficha.Simbolo;
 
-                AnsiConsole.Markup($"[blue]¡Resbalaste {GetDirectionString(direction)} por la lluvia![/]");
+                AnsiConsole.Markup($"\n[blue]¡Resbalaste {GetDirectionString(direction)} por la lluvia![/]\n");
             }
 
         }
         else
         {
-            AnsiConsole.Markup("[blue]La lluvia te mojó, pero mantuviste el equilibrio.[/]");
+            AnsiConsole.Markup("\n[blue]La lluvia te mojó, pero mantuviste el equilibrio.[/]\n");
         }
 
         string GetDirectionString(int direction)

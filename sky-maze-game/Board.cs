@@ -3,7 +3,7 @@ namespace sky_maze_game.GameLogic;
 public class Board
 {
     public static int dimension;
-    public static int center = dimension/2;
+    public static int center = dimension / 2;
     public static string[,] board;
     public static int[,] direcciones = { { 0, -1 }, { 0, 1 }, { -1, 0 }, { 1, 0 } };
 
@@ -69,24 +69,33 @@ public class Board
 
     public static int[,] DistanceValidator(string[,] board, int firstRow, int firstColumn) //algoritmo de lee
     {
+
+        int[,] distancias = new int[dimension, dimension];
+
         board[center, center] = "c";
+
         foreach (Position Posicion in Position.InitialPositionFichas)
         {
             board[Posicion.x, Posicion.y] = "c";
         }
-        int[,] distancias = new int[dimension, dimension];
-        distancias[firstRow, firstColumn] = 1;
-        int[] dr = { -1, 1, 0, 0, -1, 1, -1, 1 };
-        int[] dc = { 0, 0, 1, -1, -1, -1, 1, 1 };
-        bool change;
 
         for (int i = 0; i < dimension; i++)
         {
             for (int j = 0; j < dimension; j++)
             {
-                distancias[i, j] = -1;
+                if (board[i, j] != "w")
+                {
+                    distancias[i, j] = -1;
+
+                }
             }
         }
+
+        distancias[firstRow, firstColumn] = 1;
+
+        int[] dr = { -1, 1, 0, 0, -1, 1, -1, 1 };
+        int[] dc = { 0, 0, 1, -1, -1, -1, 1, 1 };
+        bool change;
 
         do
         {
@@ -96,7 +105,7 @@ public class Board
             {
                 for (int j = 0; j < dimension; j++)
                 {
-                    if (distancias[i, j] == 0)
+                    if (distancias[i, j] > 0)
                     {
                         continue;
                     }
@@ -109,7 +118,7 @@ public class Board
                         int vr = i + dr[d];
                         int vc = j + dc[d];
 
-                        if (Range(dimension, vr, vc) && distancias[vr, vc] == 0 && board[vr, vc] == "c")
+                        if (Range(dimension, vr, vc) && distancias[vr, vc] == -1 && board[vr, vc] == "c")
                         {
                             distancias[vr, vc] = distancias[i, j] + 1;
                             change = true;
@@ -139,30 +148,38 @@ public class Board
 
         int[] dr = { -1, 1, 0, 0, -1, 1, -1, 1 };
         int[] dc = { 0, 0, 1, -1, -1, -1, 1, 1 };
+        bool change;
 
-        for (int i = 0; i < dimension; i++)
+        do
         {
-            for (int j = 0; j < dimension; j++)
+            change = false;
+            for (int i = 0; i < dimension; i++)
             {
-                if (distancias[i, j] == -1)
+                for (int j = 0; j < dimension; j++)
                 {
-
-                    for (int d = 0; d < dr.Length; d++)
+                    if (distancias[i, j] == -1)
                     {
-                        int vr = i + dr[d];
-                        int vc = j + dc[d];
+                        int minDist = int.MaxValue;
+                        for (int d = 0; d < dr.Length; d++)
+                        {
+                            int vr = i + dr[d];
+                            int vc = j + dc[d];
 
-                        if (Range(dimension, vr, vc) && distancias[vr, vc] != -1)
+                            if (Range(dimension, vr, vc) && distancias[vr, vc] > 0)
+                            {
+                                minDist = Math.Min(minDist, distancias[vr, vc] + 1);
+                                change = true;
+                            }
+                        }
+                        if (minDist != int.MaxValue)
                         {
                             board[i, j] = "c";
-                            distancias[i, j] = distancias[vr, vc] + 1;
-                            break;
+                            distancias[i, j] = minDist;
                         }
                     }
-
                 }
             }
-        }
+        } while (change);
     }
 }
 

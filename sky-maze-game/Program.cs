@@ -48,21 +48,14 @@ class Program
     {
         GameLogic.SelectionMenu();
         Console.WriteLine("Cargando...");
+        Console.Clear();
         System.Threading.Thread.Sleep(2000);
         Board.BoardGenerator();
         int[,] distancias = Board.DistanceValidator(Board.board, 0, 0);
         Board.ValidatedBoard(Board.board, distancias);
         Trampa.TrampaGenerator();
         Ficha.FichaInitializer(Player.jugadores);
-        GameUI.PrintBoard();  
-        for (int i = 0; i < Board.dimension; i++)
-        {
-            for (int j = 0; j < Board.dimension; j++)
-            {
-                Console.Write(distancias[i, j]);
-            }
-            Console.WriteLine();
-        }
+        GameUI.PrintBoard();  // Imprime el tablero al inicio del juego
 
         bool playing = true;
         int turno = 0;
@@ -90,7 +83,7 @@ class Program
 
                         for (int step = 0; step < steps; step++)
                         {
-                            AnsiConsole.Markup($"[yellow]Tienes {steps - step} [/]\n");
+                            AnsiConsole.Markup($"[yellow]Tienes {steps-step} [/]\n");
                             Position position = jugador.selectedFicha.Posicion;
 
                             if (Position.IsTrampa(jugador.selectedFicha, position.x, position.y))
@@ -117,7 +110,7 @@ class Program
                                 break;
                             }
                         }
-                        playerTurnOver = true;
+                        playerTurnOver = true;  
                     }
 
                     if (teclaPresionada.Key == ConsoleKey.X)
@@ -132,7 +125,7 @@ class Program
                         {
                             AnsiConsole.Markup($"[red]Habilidad en enfriamiento, espera {cooldownRestante} turnos más.[/]\n");
                         }
-                        playerTurnOver = true;
+                        playerTurnOver = true; 
                     }
 
                     if (cooldownRestante > 0)
@@ -141,20 +134,18 @@ class Program
                     }
                 }
 
-                if (!playing)
-                {
+                if (!playing){
                     break;
 
-                }
+                } 
 
                 turno++;
                 Console.Clear();
                 GameUI.PrintBoard();
             }
-            if (!playing)
-            {
-                break;
-            }
+            if (!playing){
+                break; 
+            } 
         }
         Console.Clear();
         GameUI.WinArt();
