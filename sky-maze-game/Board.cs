@@ -3,7 +3,8 @@ namespace sky_maze_game.GameLogic;
 public class Board
 {
     public static int dimension;
-    public static int center = dimension / 2;
+    public static int center;
+
     public static string[,] board;
     public static int[,] direcciones = { { 0, -1 }, { 0, 1 }, { -1, 0 }, { 1, 0 } };
 
@@ -22,9 +23,15 @@ public class Board
 
     public static string[,] BoardGenerator() //recursive backtrack
     {
-        board[0, 0] = "c"; //marca el inicio
+        board[0, 0] = "c";
+        board[center, center] = "c";
 
-        GenerateMaze(board, 0, 0); //genera el laberunto
+        foreach (Position Posicion in Position.InitialPositionFichas)
+        {
+            board[Posicion.x, Posicion.y] = "c";
+        }
+
+        GenerateMaze(board, 0, 0);
         return board;
     }
 
@@ -72,13 +79,6 @@ public class Board
 
         int[,] distancias = new int[dimension, dimension];
 
-        board[center, center] = "c";
-
-        foreach (Position Posicion in Position.InitialPositionFichas)
-        {
-            board[Posicion.x, Posicion.y] = "c";
-        }
-
         for (int i = 0; i < dimension; i++)
         {
             for (int j = 0; j < dimension; j++)
@@ -113,6 +113,7 @@ public class Board
                     {
                         continue;
                     }
+
                     for (int d = 0; d < dr.Length; d++)
                     {
                         int vr = i + dr[d];
@@ -126,6 +127,7 @@ public class Board
                     }
                 }
             }
+
         } while (change);
 
         return distancias;
@@ -145,41 +147,33 @@ public class Board
 
     public static void ValidatedBoard(string[,] board, int[,] distancias)
     {
+        int[] dr = { -1, 1, 0, 0 }; //  arriba, abajo, izquierda, derecha
+        int[] dc = { 0, 0, -1, 1 };
+        Random rand = new Random();
+        int d = rand.Next(0, dr.Length);
 
-        int[] dr = { -1, 1, 0, 0, -1, 1, -1, 1 };
-        int[] dc = { 0, 0, 1, -1, -1, -1, 1, 1 };
-        bool change;
-
-        do
+        for (int i = 0; i < dimension; i++)
         {
-            change = false;
-            for (int i = 0; i < dimension; i++)
+            for (int j = 0; j < dimension; j++)
             {
-                for (int j = 0; j < dimension; j++)
+                if (distancias[i, j] == -1)
                 {
-                    if (distancias[i, j] == -1)
-                    {
-                        int minDist = int.MaxValue;
-                        for (int d = 0; d < dr.Length; d++)
-                        {
-                            int vr = i + dr[d];
-                            int vc = j + dc[d];
 
-                            if (Range(dimension, vr, vc) && distancias[vr, vc] > 0)
-                            {
-                                minDist = Math.Min(minDist, distancias[vr, vc] + 1);
-                                change = true;
-                            }
-                        }
-                        if (minDist != int.MaxValue)
+                    for (int step = 1; step <= 2; step++)
+                    {
+                        int vr = i + dr[d] + 1;
+                        int vc = j + dc[d] + 1;
+
+                        if (Range(dimension, vr, vc) && board[vr, vc] == "c")
                         {
                             board[i, j] = "c";
-                            distancias[i, j] = minDist;
+                            distancias[i, j] = distancias[vr, vc] + step;
                         }
                     }
+
                 }
             }
-        } while (change);
+        }
     }
 }
 

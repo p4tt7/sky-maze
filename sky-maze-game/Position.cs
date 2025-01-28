@@ -75,9 +75,6 @@ public class Position
             Board.board[lastX, lastY] = "c";
         }
     }
-        
-    
-
 
 
     public static bool IsTrampa(Ficha ficha, int newX, int newY)
@@ -109,7 +106,7 @@ public class Position
 
         foreach (Player jugador in Player.jugadores)
         {
-            if (Board.board[Board.center, Board.center] == jugador.selectedFicha.Simbolo)
+            if (Board.board[Board.dimension/2, Board.dimension/2] == jugador.selectedFicha.Simbolo)
             {
                 return true;
             }

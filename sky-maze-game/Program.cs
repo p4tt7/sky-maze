@@ -55,7 +55,7 @@ class Program
         Board.ValidatedBoard(Board.board, distancias);
         Trampa.TrampaGenerator();
         Ficha.FichaInitializer(Player.jugadores);
-        GameUI.PrintBoard();  // Imprime el tablero al inicio del juego
+        GameUI.PrintBoard(); 
 
         bool playing = true;
         int turno = 0;
@@ -83,7 +83,6 @@ class Program
 
                         for (int step = 0; step < steps; step++)
                         {
-                            AnsiConsole.Markup($"[yellow]Tienes {steps-step} [/]\n");
                             Position position = jugador.selectedFicha.Posicion;
 
                             if (Position.IsTrampa(jugador.selectedFicha, position.x, position.y))

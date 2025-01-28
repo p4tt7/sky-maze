@@ -38,13 +38,13 @@ public class Trampa
         switch (Board.dimension)
         {
             case 13: // FACIL
-                probabilidadTrampa = 0.05;
+                probabilidadTrampa = 0.04;
                 break;
             case 15: // INTERMEDIO
-                probabilidadTrampa = 0.07;
+                probabilidadTrampa = 0.05;
                 break;
             case 19: // DIFICIL
-                probabilidadTrampa = 0.09;
+                probabilidadTrampa = 0.06;
                 break;
         }
 
@@ -198,6 +198,8 @@ public class Trampa
                 break;
         }
     }
+
+   
 }
 
 

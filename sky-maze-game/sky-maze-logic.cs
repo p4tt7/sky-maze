@@ -104,12 +104,15 @@ public class GameLogic
         {
             case 1:
                 Board.dimension = 13;
+                Board.center = 13/2;
                 break;
             case 2:
                 Board.dimension = 15;
+                Board.center = 15/2;
                 break;
             case 3:
                 Board.dimension = 19;
+                Board.center = 19/2;
                 break;
         }
         Board.BoardInitializer();

@@ -60,6 +60,8 @@ public class Ficha
     public static void WindVelocity(Ficha ficha)
     {
         Console.WriteLine("Ha activado la habilidad\n");
+        
+
 
         ficha.Velocidad += 10;
 
@@ -69,6 +71,8 @@ public class Ficha
 
     public static void Fly(Ficha ficha)
     {
+        Console.WriteLine("Ha activado la habilidad, ahora puede volar sobre los obstaculos");
+        System.Threading.Thread.Sleep(1500);
 
         int pasos = 3;
 
@@ -151,6 +155,7 @@ public class Ficha
     public static void Eclipse(Ficha ficha)
     {
         Console.WriteLine("Selecciona una ficha por su índice para copiar su habilidad:");
+        System.Threading.Thread.Sleep(1500);
 
         int index = 1;
         foreach (Player jugador in Player.jugadores)
@@ -176,6 +181,7 @@ public class Ficha
     public static void Rainbow(Ficha ficha)
     {
         Console.WriteLine("Ha activado la habilidad de Rainbow.");
+        System.Threading.Thread.Sleep(1500);
 
         if (ficha.Estado != State.Normal)
         {
@@ -191,6 +197,7 @@ public class Ficha
     public static void Star(Ficha ficha)
     {
         Console.WriteLine("Ha activado la habilidad de Star.");
+        System.Threading.Thread.Sleep(1500);
         Position currentPosition = ficha.Posicion;
 
         int[] dx = { -1, 1, 0, 0, -1, 1, -1, 1 };
@@ -215,6 +222,7 @@ public class Ficha
     public static void Shadow(Ficha ficha)
     {
         Console.WriteLine("Ha activado la habilidad de Shadow.");
+        System.Threading.Thread.Sleep(1500);
 
         for (int i = 0; i < 3; i++)
         {
@@ -227,6 +235,7 @@ public class Ficha
 
             Board.board[x, y] = "🕸️";
             Console.WriteLine($"Creada una casilla de desaceleración en ({x}, {y}).");
+            System.Threading.Thread.Sleep(1500);
         }
     }
 
@@ -258,18 +267,27 @@ public class Ficha
 
     public static void ApplyTrapEffects(Ficha ficha)
     {
-        switch (ficha.Estado)
-        {
-            case Ficha.State.Mojado:
+        if(ficha.Estado == State.Congelado){
+            AnsiConsole.Markup("[Blue]Estas congelado! No puedes moverte por este turno[/]");
+            ficha.Velocidad++;
+        }
+        if(ficha.Estado == State.Mojado){
+            int wetTurns = 5;
+            while(wetTurns>0){
                 Trampa.Rain(ficha);
-                break;
-            case Ficha.State.Congelado:
-                AnsiConsole.Markup("[blue]Estás congelado y no puedes moverte este turno.[/]");
-                break;
+                wetTurns--;
+            }     
         }
     }
-
 }
+
+    
+        
+    
+        
+    
+
+
 
 
 

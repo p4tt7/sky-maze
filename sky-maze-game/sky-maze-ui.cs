@@ -9,7 +9,7 @@ public class GameUI
 
     public static void IntroAnimation()
     {
-        AnsiConsole.Clear();
+        Console.Clear();
         AnsiConsole.Markup("[cyan]El cielo es hermoso, pero...[/]");
         System.Threading.Thread.Sleep(2000);
         AnsiConsole.Clear();
@@ -98,6 +98,11 @@ public class GameUI
                         symbol = jugador.selectedFicha.Simbolo;
                         break;
                     }
+                }
+
+                if (Board.center == i && Board.center == j) // Ccentro
+                {
+                    symbol = "🟦";
                 }
 
                 if (Board.board[i, j] == "c") // Camino

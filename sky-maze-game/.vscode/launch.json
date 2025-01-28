@@ -1,0 +1,15 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C#: sky-maze-game",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}\\sky-maze-game.csproj",
+            "launchConfigurationId": "TargetFramework=;sky-maze-game"
+        }
+    ]
+}
