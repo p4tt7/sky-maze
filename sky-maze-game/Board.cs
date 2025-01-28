@@ -130,6 +130,18 @@ public class Board
 
         } while (change);
 
+        for (int i = 0; i < dimension; i++)
+        {
+            for (int j = 0; j < dimension; j++)
+            {
+                Console.Write(distancias[i, j]);
+
+            }
+            Console.WriteLine();
+
+
+        }
+
         return distancias;
     }
 
@@ -147,10 +159,9 @@ public class Board
 
     public static void ValidatedBoard(string[,] board, int[,] distancias)
     {
-        int[] dr = { -1, 1, 0, 0 }; //  arriba, abajo, izquierda, derecha
+        int dimension = board.GetLength(0); // Suponiendo que board es cuadrado
+        int[] dr = { -1, 1, 0, 0 }; // arriba, abajo, izquierda, derecha
         int[] dc = { 0, 0, -1, 1 };
-        Random rand = new Random();
-        int d = rand.Next(0, dr.Length);
 
         for (int i = 0; i < dimension; i++)
         {
@@ -158,24 +169,41 @@ public class Board
             {
                 if (distancias[i, j] == -1)
                 {
-
-                    for (int step = 1; step <= 2; step++)
+                    for (int d = 0; d < dr.Length; d++) // Revisa todas las direcciones
                     {
-                        int vr = i + dr[d] + 1;
-                        int vc = j + dc[d] + 1;
+                        int vr = i;
+                        int vc = j;
 
-                        if (Range(dimension, vr, vc) && board[vr, vc] == "c")
+                        while (Range(dimension, vr + dr[d], vc + dc[d]))
                         {
-                            board[i, j] = "c";
-                            distancias[i, j] = distancias[vr, vc] + step;
-                        }
-                    }
+                            vr += dr[d];
+                            vc += dc[d];
 
+                            if (board[vr, vc] != "w")
+                            {
+                               
+                                int markR = i;
+                                int markC = j;
+                                while (markR != vr || markC != vc)
+                                {
+                                    board[markR, markC] = "c";
+                                    distancias[markR, markC] = 0;
+                                    markR += dr[d];
+                                    markC += dc[d];
+                                }
+                                board[vr, vc] = "c";
+                                distancias[vr, vc] = 0;
+                                break; 
+                            }
+                        }
+                 
+                    }
                 }
             }
         }
     }
 }
+
 
 
 
