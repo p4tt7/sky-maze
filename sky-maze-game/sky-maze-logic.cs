@@ -120,6 +120,7 @@ public class GameLogic
                 AnsiConsole.MarkupLine("[red]Opción no válida, intenta de nuevo.[/]");
                 break;
         }
+        Console.Clear();
         Board.BoardInitializer();
     }
 

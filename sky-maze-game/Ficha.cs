@@ -35,12 +35,12 @@ public class Ficha
     public HabilidadType Habilidad { get; set; }
 
     public static List<Ficha> FichasDisponibles = new List<Ficha>{
-    new Ficha {Nombre = "Arcoiris" , Simbolo = "🌈" , Velocidad = 4 , CoolingTime = 3 , Habilidad = HabilidadType.Rainbow},
-    new Ficha {Nombre = "Luna Nueva" , Simbolo = "🌑" , Velocidad = 3 , CoolingTime = 2 , Habilidad = HabilidadType.Shadow},
-    new Ficha {Nombre = "Viento" , Simbolo = "🍃" , Velocidad = 2 , CoolingTime = 5 , Habilidad = HabilidadType.WindVelocity},
-    new Ficha {Nombre = "Nube" , Simbolo = "⛅" , Velocidad = 3 , CoolingTime = 3 , Habilidad = HabilidadType.Fly},
-    new Ficha {Nombre = "Estrella" , Simbolo = "✨" , Velocidad = 3 , CoolingTime = 6 , Habilidad = HabilidadType.Star},
-    new Ficha {Nombre = "Eclipse" , Simbolo = "🌘" , Velocidad = 4 , CoolingTime = 8 , Habilidad = HabilidadType.Eclipse},
+    new Ficha {Nombre = "Arcoiris" , Simbolo = "🌈" , Velocidad = 4 , CoolingTime = 1 , Habilidad = HabilidadType.Rainbow},
+    new Ficha {Nombre = "Luna Nueva" , Simbolo = "🌑" , Velocidad = 3 , CoolingTime = 1 , Habilidad = HabilidadType.Shadow},
+    new Ficha {Nombre = "Viento" , Simbolo = "🍃" , Velocidad = 2 , CoolingTime = 1 , Habilidad = HabilidadType.WindVelocity},
+    new Ficha {Nombre = "Nube" , Simbolo = "⛅" , Velocidad = 3 , CoolingTime = 1 , Habilidad = HabilidadType.Fly},
+    new Ficha {Nombre = "Estrella" , Simbolo = "✨" , Velocidad = 3 , CoolingTime = 1 , Habilidad = HabilidadType.Star},
+    new Ficha {Nombre = "Eclipse" , Simbolo = "🌘" , Velocidad = 4 , CoolingTime = 1 , Habilidad = HabilidadType.Eclipse},
     };
 
     public static void FichaInitializer(List<Player> jugadores)

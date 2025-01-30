@@ -78,6 +78,16 @@ class Program
                 GameUI.PrintBoard();
             }
         }
+
+        foreach (Player jugador in Player.jugadores)
+        {
+            if (jugador.selectedFicha.CoolingTime > 0)
+            {
+                jugador.selectedFicha.CoolingTime--;
+            }
+        }
+
+
     }
 
     public static void HandlePlayerTurn(Player jugador)
@@ -96,10 +106,12 @@ class Program
             if (teclaPresionada.Key == ConsoleKey.Enter)
             {
                 int steps = jugador.selectedFicha.Velocidad;
-                for (int i = 0; i < steps; i++)
+                while(steps > 0)
                 {
                     if (Position.Movement(jugador.selectedFicha))
                     {
+                        steps--;
+
                         if (Position.IsWinning())
                         {
                             AnsiConsole.MarkupLine($"[green]¡Felicidades, {jugador.Nombre} ha ganado![/]");
@@ -113,23 +125,34 @@ class Program
                         }
                     }
 
-                    else
-                    {
-                        break;
+                    else{
+                        continue;
                     }
+
                 }
                 playerTurnOver = true;
             }
             else if (teclaPresionada.Key == ConsoleKey.X)
             {
-                HandleAbility(jugador);
-                playerTurnOver = true;
+                bool abilityUsed = HandleAbility(jugador);
+
+                if(!abilityUsed)
+                {
+                    AnsiConsole.MarkupLine("[red]No puedes usar la habilidad, pero puedes moverte.[/]");
+                }
+
+
             }
+        }
+
+        if (jugador.selectedFicha.CoolingTime > 0)
+        {
+            jugador.selectedFicha.CoolingTime--;
         }
     }
 
 
-    public static void HandleAbility(Player jugador)
+    public static bool HandleAbility(Player jugador)
     {
         if (jugador.selectedFicha.CoolingTime == 0)
         {
@@ -137,12 +160,15 @@ class Program
             jugador.selectedFicha.CoolingTime = jugador.selectedFicha.CoolingTime;
             AnsiConsole.MarkupLine($"[cyan]Habilidad activada, espera {jugador.selectedFicha.CoolingTime} turnos para usarla nuevamente.[/]");
             System.Threading.Thread.Sleep(2000);
+            return true;
         }
         else
         {
             AnsiConsole.MarkupLine($"[red]Habilidad en enfriamiento, espera {jugador.selectedFicha.CoolingTime} turnos más.[/]");
             System.Threading.Thread.Sleep(2000);
+            return false;
         }
+
     }
 
 
