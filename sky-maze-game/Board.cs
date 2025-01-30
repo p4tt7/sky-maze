@@ -130,18 +130,6 @@ public class Board
 
         } while (change);
 
-        for (int i = 0; i < dimension; i++)
-        {
-            for (int j = 0; j < dimension; j++)
-            {
-                Console.Write(distancias[i, j]);
-
-            }
-            Console.WriteLine();
-
-
-        }
-
         return distancias;
     }
 
@@ -159,7 +147,6 @@ public class Board
 
     public static void ValidatedBoard(string[,] board, int[,] distancias)
     {
-        int dimension = board.GetLength(0); // Suponiendo que board es cuadrado
         int[] dr = { -1, 1, 0, 0 }; // arriba, abajo, izquierda, derecha
         int[] dc = { 0, 0, -1, 1 };
 
@@ -169,34 +156,21 @@ public class Board
             {
                 if (distancias[i, j] == -1)
                 {
-                    for (int d = 0; d < dr.Length; d++) // Revisa todas las direcciones
+                    for (int d = 0; d < dr.Length; d++)
                     {
-                        int vr = i;
-                        int vc = j;
+                        int vr = i + dr[d];
+                        int vc = j + dc[d];
 
-                        while (Range(dimension, vr + dr[d], vc + dc[d]))
+                        if (vr >= 0 && vr < dimension && vc >= 0 && vc < dimension)
                         {
-                            vr += dr[d];
-                            vc += dc[d];
 
-                            if (board[vr, vc] != "w")
-                            {
-                               
-                                int markR = i;
-                                int markC = j;
-                                while (markR != vr || markC != vc)
-                                {
-                                    board[markR, markC] = "c";
-                                    distancias[markR, markC] = 0;
-                                    markR += dr[d];
-                                    markC += dc[d];
-                                }
-                                board[vr, vc] = "c";
-                                distancias[vr, vc] = 0;
-                                break; 
-                            }
+                            board[i, j] = "c";
+                            distancias[i, j] = 0;
+                            board[vr, vc] = "c";
+                            distancias[vr, vc] = 0;
+                            break;
+
                         }
-                 
                     }
                 }
             }

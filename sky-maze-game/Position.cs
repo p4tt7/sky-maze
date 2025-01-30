@@ -20,7 +20,7 @@ public class Position
     };
 
 
-    public static void Movement(Ficha ficha)
+    public static bool Movement(Ficha ficha)
     {
         Console.Clear();
         GameUI.GameUI.PrintBoard();
@@ -67,29 +67,32 @@ public class Position
 
         if (moverse)
         {
-
-
             ficha.Posicion.x = newX;
             ficha.Posicion.y = newY;
-            Board.board[ficha.Posicion.x, ficha.Posicion.y] = ficha.Simbolo;
+
+            Trampa.DetectarTrampa(ficha);
+
             Board.board[lastX, lastY] = "c";
-        }
-    }
 
 
-    public static bool IsTrampa(Ficha ficha, int newX, int newY)
-    {
-        foreach (Position posicion in Trampa.PosicionesTrampas)
-        {
-            if (posicion.x == newX && posicion.y == newY)
+            if (Board.board[newX, newY] == "c")
             {
-                return true;
+                Board.board[newX, newY] = ficha.Simbolo;
             }
+
+            return true;
         }
+
         return false;
     }
 
 
+    public static void FichaInfo(Ficha ficha)
+    {
+        Console.WriteLine($"Movimientos restante: {ficha.Velocidad}");
+        Console.WriteLine($"Cooldown de habilidad: {ficha.CoolingTime} turnos\n");
+        Console.WriteLine($"Estado: {ficha.Estado}");
+    }
 
     public static bool IsWall(Ficha ficha, int newX, int newY)
     {
@@ -106,7 +109,7 @@ public class Position
 
         foreach (Player jugador in Player.jugadores)
         {
-            if (Board.board[Board.dimension/2, Board.dimension/2] == jugador.selectedFicha.Simbolo)
+            if (Board.board[Board.dimension / 2, Board.dimension / 2] == jugador.selectedFicha.Simbolo)
             {
                 return true;
             }

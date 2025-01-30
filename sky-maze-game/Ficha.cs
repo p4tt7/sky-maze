@@ -9,8 +9,11 @@ public class Ficha
     public Position? Posicion { get; set; }
     public int Velocidad { get; set; }
     public int CoolingTime { get; set; }
+
     public static Random rand = new Random();
+
     public State Estado { get; set; }
+    public int StateDuration { get; set; }
 
     public enum State
     {
@@ -32,12 +35,12 @@ public class Ficha
     public HabilidadType Habilidad { get; set; }
 
     public static List<Ficha> FichasDisponibles = new List<Ficha>{
-    new Ficha {Nombre = "Arcoiris" , Simbolo = "🌈" , Velocidad = 4 , CoolingTime = 15 , Habilidad = HabilidadType.Rainbow},
+    new Ficha {Nombre = "Arcoiris" , Simbolo = "🌈" , Velocidad = 4 , CoolingTime = 3 , Habilidad = HabilidadType.Rainbow},
     new Ficha {Nombre = "Luna Nueva" , Simbolo = "🌑" , Velocidad = 3 , CoolingTime = 2 , Habilidad = HabilidadType.Shadow},
-    new Ficha {Nombre = "Viento" , Simbolo = "🍃" , Velocidad = 2 , CoolingTime = 3 , Habilidad = HabilidadType.WindVelocity},
+    new Ficha {Nombre = "Viento" , Simbolo = "🍃" , Velocidad = 2 , CoolingTime = 5 , Habilidad = HabilidadType.WindVelocity},
     new Ficha {Nombre = "Nube" , Simbolo = "⛅" , Velocidad = 3 , CoolingTime = 3 , Habilidad = HabilidadType.Fly},
     new Ficha {Nombre = "Estrella" , Simbolo = "✨" , Velocidad = 3 , CoolingTime = 6 , Habilidad = HabilidadType.Star},
-    new Ficha {Nombre = "Eclipse" , Simbolo = "🌘" , Velocidad = 4 , CoolingTime = 10 , Habilidad = HabilidadType.Eclipse},
+    new Ficha {Nombre = "Eclipse" , Simbolo = "🌘" , Velocidad = 4 , CoolingTime = 8 , Habilidad = HabilidadType.Eclipse},
     };
 
     public static void FichaInitializer(List<Player> jugadores)
@@ -59,22 +62,20 @@ public class Ficha
 
     public static void WindVelocity(Ficha ficha)
     {
-        Console.WriteLine("Ha activado la habilidad\n");
-        
-
+        AnsiConsole.Markup("[green]Ha activado la habilidad\n[/]");
 
         ficha.Velocidad += 10;
 
-        Console.WriteLine($"Ahora eres diez veces mas rapido.");
+        Console.WriteLine("Ahora eres diez veces mas rapido.\n");
     }
 
 
     public static void Fly(Ficha ficha)
     {
-        Console.WriteLine("Ha activado la habilidad, ahora puede volar sobre los obstaculos");
-        System.Threading.Thread.Sleep(1500);
+        AnsiConsole.MarkupLine("[grey]Ha activado la habilidad, ahora puede volar sobre los obstáculos[/]");
+        System.Threading.Thread.Sleep(2200);
 
-        int pasos = 3;
+        int pasos = ficha.Velocidad;
 
         for (int i = 0; i < pasos; i++)
         {
@@ -85,70 +86,47 @@ public class Ficha
             int lastX = ficha.Posicion.x;
             int lastY = ficha.Posicion.y;
 
-            string originalCell = Board.board[ficha.Posicion.x, ficha.Posicion.y];
+            int newX = lastX;
+            int newY = lastY;
 
             if (teclaPresionada.Key == ConsoleKey.W || teclaPresionada.Key == ConsoleKey.UpArrow)
             {
-                if (ficha.Posicion.x > 0)
-                {
-                    ficha.Posicion.x--;
-                    i--;
-                }
-                else
-                {
-                    Console.WriteLine("Movimiento no valido");
-                }
+                if (ficha.Posicion.x > 0) newX--;
+                else { Console.WriteLine("Movimiento no válido"); System.Threading.Thread.Sleep(1000); continue; }
             }
             else if (teclaPresionada.Key == ConsoleKey.A || teclaPresionada.Key == ConsoleKey.LeftArrow)
             {
-                if (ficha.Posicion.y > 0)
-                {
-                    ficha.Posicion.y--;
-                    i--;
-                }
-                else
-                {
-                    Console.WriteLine("Movimiento no valido");
-                }
+                if (ficha.Posicion.y > 0) newY--;
+                else { Console.WriteLine("Movimiento no válido"); System.Threading.Thread.Sleep(1000); continue; }
             }
             else if (teclaPresionada.Key == ConsoleKey.S || teclaPresionada.Key == ConsoleKey.DownArrow)
             {
-                if (ficha.Posicion.x < Board.dimension - 1)
-                {
-                    ficha.Posicion.x++;
-                    i--;
-                }
-                else
-                {
-                    Console.WriteLine("Movimiento no valido");
-                }
+                if (ficha.Posicion.x < Board.dimension - 1) newX++;
+                else { Console.WriteLine("Movimiento no válido"); System.Threading.Thread.Sleep(1000); continue; }
             }
             else if (teclaPresionada.Key == ConsoleKey.D || teclaPresionada.Key == ConsoleKey.RightArrow)
             {
-                if (ficha.Posicion.y < Board.dimension - 1)
-                {
-                    ficha.Posicion.y++;
-                    i--;
-                }
-                else
-                {
-                    Console.WriteLine("Movimiento no valido");
-                }
+                if (ficha.Posicion.y < Board.dimension - 1) newY++;
+                else { Console.WriteLine("Movimiento no válido"); System.Threading.Thread.Sleep(1000); continue; }
             }
-
             else
             {
                 Console.WriteLine("Tecla no reconocida.");
-                i--;
+                System.Threading.Thread.Sleep(1000);
+                continue;
             }
 
-            if (originalCell != ficha.Simbolo)
-            {
-                Board.board[lastX, lastY] = originalCell;
-            }
+            string nextCell = Board.board[newX, newY];
 
-            Board.board[ficha.Posicion.x, ficha.Posicion.y] = ficha.Simbolo;
+            Board.board[newX, newY] = ficha.Simbolo;
+            ficha.Posicion.x = newX;
+            ficha.Posicion.y = newY;
 
+            Board.board[lastX, lastY] = nextCell;
+
+            Console.Clear();
+            GameUI.GameUI.PrintBoard();
+            System.Threading.Thread.Sleep(500);
         }
     }
 
@@ -213,7 +191,6 @@ public class Ficha
                 if (Board.board[newX, newY] == "w" && !Position.IsFicha(newX, newY))
                 {
                     Board.board[newX, newY] = "c";
-                    Console.WriteLine($"Convirtiendo ({newX}, {newY}) en camino.");
                 }
             }
         }
@@ -234,7 +211,6 @@ public class Ficha
             } while (Board.board[x, y] != "c");
 
             Board.board[x, y] = "🕸️";
-            Console.WriteLine($"Creada una casilla de desaceleración en ({x}, {y}).");
             System.Threading.Thread.Sleep(1500);
         }
     }
@@ -267,25 +243,46 @@ public class Ficha
 
     public static void ApplyTrapEffects(Ficha ficha)
     {
-        if(ficha.Estado == State.Congelado){
-            AnsiConsole.Markup("[Blue]Estas congelado! No puedes moverte por este turno[/]");
-            ficha.Velocidad++;
+        if (ficha.Estado == State.Congelado)
+        {
+            AnsiConsole.MarkupLine("[Blue]¡Estás congelado! No puedes moverte por este turno[/]\n");
+            ficha.Velocidad = 0;
+            ficha.StateDuration--;
+
+            if (ficha.StateDuration <= 0)
+            {
+                ficha.Estado = State.Normal;
+                ficha.Velocidad = 1;
+            }
         }
-        if(ficha.Estado == State.Mojado){
-            int wetTurns = 5;
-            while(wetTurns>0){
-                Trampa.Rain(ficha);
-                wetTurns--;
-            }     
+        else if (ficha.Estado == State.Mojado)
+        {
+            Trampa.Rain(ficha); 
+            ficha.StateDuration--;
+
+            if (ficha.StateDuration <= 0)
+            {
+                ficha.Estado = State.Normal; 
+                ficha.Velocidad = 1; 
+            }
         }
     }
+
+
+
+
+
+
+
+
+
 }
 
-    
-        
-    
-        
-    
+
+
+
+
+
 
 
 

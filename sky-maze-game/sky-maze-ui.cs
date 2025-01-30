@@ -100,16 +100,16 @@ public class GameUI
                     }
                 }
 
-                if (Board.center == i && Board.center == j) // Ccentro
+                if (i == Board.center && j == Board.center) // centro
                 {
                     symbol = "🟦";
                 }
 
-                if (Board.board[i, j] == "c") // Camino
+                else if (Board.board[i, j] == "c") // camino
                 {
                     symbol = "  ";
                 }
-                else if (Board.board[i, j] == "w") // Pared
+                else if (Board.board[i, j] == "w") // pared
                 {
                     symbol = "⬜";
                 }

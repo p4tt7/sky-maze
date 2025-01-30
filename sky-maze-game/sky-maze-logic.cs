@@ -27,20 +27,21 @@ public class GameLogic
         {
             AnsiConsole.MarkupLine("[bold red]Entrada inválida. Debe ser un número entre 1 y 4.[/]");
             System.Threading.Thread.Sleep(2000);
+            Console.Clear();
             SelectionMenu();
             return;
         }
 
-        // jugadores
-        for (int i = 1; i <= cant_jugadores; i++)
+        for (int i = 0; i < cant_jugadores; i++)
         {
             Console.Clear();
-            AnsiConsole.MarkupLine($"[bold cyan]Ingresa el nombre del Jugador {i}:[/]");
+            AnsiConsole.MarkupLine($"[bold cyan]Ingresa el nombre del Jugador {i + 1}:[/]");
             string? nombreJugador = Console.ReadLine();
 
             if (!string.IsNullOrEmpty(nombreJugador))
             {
-                Player.jugadores.Add(new Player(nombreJugador));
+                Position posicionInicial = Player.posicionesIniciales[i];
+                Player.jugadores.Add(new Player(nombreJugador, posicionInicial));
             }
             else
             {
@@ -104,15 +105,19 @@ public class GameLogic
         {
             case 1:
                 Board.dimension = 13;
-                Board.center = 13/2;
+                Board.center = 13 / 2;
                 break;
             case 2:
                 Board.dimension = 15;
-                Board.center = 15/2;
+                Board.center = 15 / 2;
                 break;
             case 3:
                 Board.dimension = 19;
-                Board.center = 19/2;
+                Board.center = 19 / 2;
+                break;
+
+            default:
+                AnsiConsole.MarkupLine("[red]Opción no válida, intenta de nuevo.[/]");
                 break;
         }
         Board.BoardInitializer();
