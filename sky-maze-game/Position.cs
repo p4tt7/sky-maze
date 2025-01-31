@@ -70,26 +70,26 @@ public class Position
             ficha.Posicion.x = newX;
             ficha.Posicion.y = newY;
 
-            Trampa.DetectarTrampa(ficha);
-
-            if(Board.board[newX, newY] == "🕸️")
-            {
-                ficha.Velocidad = Math.Max(1, ficha.Velocidad - 2);
-            }
-
             Board.board[lastX, lastY] = "c";
 
+            Trampa.DetectarTrampa(ficha);
 
-            if (Board.board[newX, newY] == "c")
+            if (Board.board[newX, newY] == "🕸️")
             {
-                Board.board[newX, newY] = ficha.Simbolo;
+                ficha.Estado = Ficha.State.Slower;
+                ficha.StateDuration = 3;
+                ficha.Velocidad = Math.Max(1, ficha.Velocidad - 2);
+                AnsiConsole.MarkupLine("[red]¡Has sido ralentizado por una telaraña![/]");
             }
+
+            Board.board[newX, newY] = ficha.Simbolo;
 
             return true;
         }
 
         return false;
     }
+
 
 
     public static bool IsWall(Ficha ficha, int newX, int newY)

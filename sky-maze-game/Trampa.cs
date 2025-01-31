@@ -35,13 +35,13 @@ public class Trampa
 
         switch (Board.dimension)
         {
-            case 13: // FACIL
+            case 9: // FACIL
                 probabilidadTrampa = 0.06;
                 break;
-            case 15: // INTERMEDIO
+            case 11: // INTERMEDIO
                 probabilidadTrampa = 0.069;
                 break;
-            case 19: // DIFICIL
+            case 13: // DIFICIL
                 probabilidadTrampa = 0.07;
                 break;
         }
@@ -50,7 +50,7 @@ public class Trampa
         {
             for (int j = 0; j < Board.dimension; j++)
             {
-                if (Board.board[i, j] == "c" && PuedeColocarTrampa(i, j))
+                if (Board.board[i, j] == "c")
                 {
                     if (random.NextDouble() < probabilidadTrampa && Trampa.Trampas.Count > 0)
                     {
@@ -60,29 +60,6 @@ public class Trampa
                 }
             }
         }
-    }
-
-    private static bool PuedeColocarTrampa(int x, int y)
-    {
-        int[] dx = { -1, 0, 1, -1, 1, -1, 0, 1 };
-        int[] dy = { -1, -1, -1, 0, 0, 1, 1, 1 };
-
-        for (int i = 0; i < 8; i++)
-        {
-            int nx = x + dx[i];
-            int ny = y + dy[i];
-            if (nx >= 0 && nx < Board.dimension && ny >= 0 && ny < Board.dimension)
-            {
-                foreach (var trampa in TrampasActivas)
-                {
-                    if (Board.board[nx, ny] == trampa.Simbolo)
-                    {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
     }
 
     public static void DetectarTrampa(Ficha ficha)
@@ -123,13 +100,15 @@ public class Trampa
     }
 
 
+
+
     public static void Snowflake(Ficha ficha)
     {
         AnsiConsole.MarkupLine("[cyan]Estás congelado, no puedes moverte por 3 turnos.\n[/]");
         System.Threading.Thread.Sleep(2000);
         ficha.Estado = Ficha.State.Congelado;
-        ficha.StateDuration = 1;
-        ficha.Velocidad = -3;
+        ficha.StateDuration = 3;
+        ficha.Velocidad = 0;
     }
 
     public static void Rain(Ficha ficha)
@@ -138,38 +117,15 @@ public class Trampa
         ficha.StateDuration = 5;
         AnsiConsole.MarkupLine("[blue]Estás mojado, cuidado con resbalar.[/]\n");
         System.Threading.Thread.Sleep(2000);
-
-
-        if (Ficha.rand.Next(0, 2) == 0)
-        {
-            int[] dx = { 0, 1, 0, -1 };
-            int[] dy = { -1, 0, 1, 0 };
-            int direction = Ficha.rand.Next(0, 4);
-
-            int newX = ficha.Posicion.x + dx[direction];
-            int newY = ficha.Posicion.y + dy[direction];
-
-            if (newX >= 0 && newX < Board.dimension && newY >= 0 && newY < Board.dimension && Board.board[newX, newY] == "c")
-            {
-                Board.board[ficha.Posicion.x, ficha.Posicion.y] = "c";
-                ficha.Posicion = new Position(newX, newY);
-                Board.board[newX, newY] = ficha.Simbolo;
-
-                AnsiConsole.MarkupLine("[blue]¡Resbalaste por la lluvia![/]");
-                System.Threading.Thread.Sleep(2000);
-            }
-
-        }
-        else
-        {
-            AnsiConsole.MarkupLine("[blue]La lluvia te mojó, pero mantuviste el equilibrio.[/]");
-        }
     }
 
 
     public static void Skyhole(Ficha ficha)
     {
-        Board.board[ficha.Posicion.x, ficha.Posicion.y] = "c";
+        int oldX = ficha.Posicion.x;
+        int oldY = ficha.Posicion.y;
+
+        Board.board[oldX, oldY] = "c";
 
         int newX, newY;
 
@@ -180,35 +136,36 @@ public class Trampa
         } while (Board.board[newX, newY] != "c");
 
         ficha.Posicion = new Position(newX, newY);
+
         Board.board[newX, newY] = ficha.Simbolo;
 
-        AnsiConsole.MarkupLine("[magenta]¡Te has teletransportado a otro lugar gracias al Skyhole![/]");
+        AnsiConsole.MarkupLine("[magenta]¡Te has teletransportado a otro lugar debido al Skyhole![/]");
         System.Threading.Thread.Sleep(2000);
     }
 
     public static void Rayo(Ficha ficha)
-    {
-        Player? jugador = Player.jugadores.FirstOrDefault(j => j.selectedFicha == ficha);
-        Position posicionInicial = jugador.PosicionInicial;
-        int oldX = ficha.Posicion.x;
-        int oldY = ficha.Posicion.y;
+{
+    Player? jugador = Player.jugadores.FirstOrDefault(j => j.selectedFicha == ficha);
+    Position posicionInicial = jugador.PosicionInicial;
+    int oldX = ficha.Posicion.x;
+    int oldY = ficha.Posicion.y;
 
-        if (oldX >= 0 && oldX < Board.dimension && oldY >= 0 && oldY < Board.dimension)
-        {
-            Board.board[oldX, oldY] = "c";
-        }
 
-        ficha.Posicion = new Position(posicionInicial.x, posicionInicial.y);
+    ficha.Posicion = new Position(posicionInicial.x, posicionInicial.y);
 
-        if (ficha.Posicion.x >= 0 && ficha.Posicion.x < Board.dimension && ficha.Posicion.y >= 0 && ficha.Posicion.y < Board.dimension)
-        {
-        Board.board[ficha.Posicion.x, ficha.Posicion.y] = ficha.Simbolo;
-        }
+    int newX = ficha.Posicion.x;
+    int newY = ficha.Posicion.y;
 
-        AnsiConsole.Markup("[yellow]¡Has sido golpeado por un rayo y vuelves al inicio![/]");
-        System.Threading.Thread.Sleep(2000);
 
-    }
+    Board.board[newX, newY] = ficha.Simbolo;
+
+
+    Board.board[oldX, oldY] = "c";
+    
+    AnsiConsole.Markup("[yellow]¡Has sido golpeado por un rayo y vuelves al inicio![/]");
+    System.Threading.Thread.Sleep(2000);
+}
+
 }
 
 

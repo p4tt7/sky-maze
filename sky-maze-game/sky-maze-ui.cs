@@ -59,16 +59,16 @@ public class GameUI
         AnsiConsole.WriteLine();
         AnsiConsole.MarkupLine("Jugadores y Fichas:\n");
         AnsiConsole.MarkupLine("[cyan]- Hasta cuatro valientes pueden emprender esta aventura, cada uno eligiendo hasta tres de las siguientes fichas:[/]");
-        AnsiConsole.MarkupLine("[cyan]  - Arcoiris (🌈):                      [/]");
-        AnsiConsole.MarkupLine("[cyan]  - Luna Nueva (🌑):                    [/]");
-        AnsiConsole.MarkupLine("[cyan]  - Viento (🍃):                        [/]");
-        AnsiConsole.MarkupLine("[cyan]  - Nube (⛅):                          [/]");
-        AnsiConsole.MarkupLine("[cyan]  - Estrella (✨):                      [/]");
-        AnsiConsole.MarkupLine("[cyan]  - Eclipse (🌘):                       [/]\n");
+        AnsiConsole.MarkupLine("[cyan]  - Arcoiris (🌈): Se reestablece de cualquier estado impuesto por una trampa.[/]");
+        AnsiConsole.MarkupLine("[cyan]  - Luna Nueva (🌑): Genera casillas aleatorias sobre el tablero que desaceleran a quien las toque[/]");
+        AnsiConsole.MarkupLine("[cyan]  - Viento (🍃): Es capaz de aumentar diez veces su velocidad[/]");
+        AnsiConsole.MarkupLine("[cyan]  - Nube (⛅): Cuando activada, vuela por encima de obstaculos y trampas[/]");
+        AnsiConsole.MarkupLine("[cyan]  - Estrella (✨): Rompe obstaculos y trampas, es inmune.[/]");
+        AnsiConsole.MarkupLine("[cyan]  - Eclipse (🌘): Puede copiar la habilidad de cualquier ficha sobre el campo[/]\n");
 
         AnsiConsole.WriteLine();
         AnsiConsole.MarkupLine("Trampas y Obstáculos:");
-        AnsiConsole.MarkupLine("[cyan]- A lo largo del laberinto, los jugadores encontrarán trampas que congelan a las fichas por 2 turnos, lluvias torrenciales que hacen que las fichas resbalen, o agujeros en el cielo que los trasladaran a otro punto del tablero.[/]\n");
+        AnsiConsole.MarkupLine("[cyan]- A lo largo del laberinto, los jugadores encontrarán trampas que congelan a las fichas por 3 turnos, lluvias torrenciales que hacen que las fichas resbalen, relampagos que los devolveran a la posicion inicial o agujeros en el cielo que los trasladaran a otro punto del tablero.[/]\n");
 
         AnsiConsole.WriteLine();
         AnsiConsole.MarkupLine("Jugabilidad:");

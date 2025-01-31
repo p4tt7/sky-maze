@@ -32,14 +32,14 @@ class Program
                 Console.Clear();
                 GameUI.Presentation();
 
-                while (true) 
+                while (true)
                 {
                     ConsoleKeyInfo tecla = Console.ReadKey(true);
                     if (tecla.Key == ConsoleKey.Enter)
                     {
                         Console.Clear();
                         Juego();
-                        break; 
+                        break;
                     }
                 }
 
@@ -59,7 +59,6 @@ class Program
         Console.WriteLine("Cargando...");
         System.Threading.Thread.Sleep(2000);
         Console.Clear();
-        //Board.board = new string[Board.dimension,Board.dimension];
         Board.BoardGenerator();
         int[,] distancias = Board.DistanceValidator(Board.board, 0, 0);
         Board.ValidatedBoard(Board.board, distancias);
@@ -111,6 +110,10 @@ class Program
 
     public static void HandlePlayerTurn(Player jugador)
     {
+        if (jugador.selectedFicha.CoolingTime > 0)
+        {
+            jugador.selectedFicha.CoolingTime--;
+        }
 
         if (!isSolitaire)
         {
@@ -135,8 +138,8 @@ class Program
                     if (Position.Movement(jugador.selectedFicha))
                     {
                         steps--;
-                        FichaInfo(jugador.selectedFicha , steps, jugador.selectedFicha.CoolingTime);
-                        System.Threading.Thread.Sleep(2000);
+                        FichaInfo(jugador.selectedFicha, steps, jugador.selectedFicha.CoolingTime);
+                        System.Threading.Thread.Sleep(1000);
 
                         if (Position.IsWinning())
                         {
@@ -146,8 +149,7 @@ class Program
                             GameUI.WinArt();
                             System.Threading.Thread.Sleep(2000);
                             Console.Clear();
-                            Restart();
-                            return;
+                            break;;
                         }
                     }
 
@@ -165,17 +167,13 @@ class Program
 
                 if (!abilityUsed)
                 {
-                    AnsiConsole.MarkupLine("[red]No puedes usar la habilidad, pero puedes moverte.[/]");
+                    AnsiConsole.MarkupLine("[cyan]No puedes usar la habilidad, pero puedes moverte![/]");
                 }
 
 
             }
         }
 
-        if (jugador.selectedFicha.CoolingTime > 0)
-        {
-            jugador.selectedFicha.CoolingTime--;
-        }
     }
 
 
@@ -187,9 +185,6 @@ class Program
 
             Ficha originalFicha = Ficha.FichasDisponibles.FirstOrDefault(f => f.Habilidad == jugador.selectedFicha.Habilidad);
             jugador.selectedFicha.CoolingTime = originalFicha.CoolingTime;
-
-
-            AnsiConsole.MarkupLine($"[cyan]Habilidad activada, espera {jugador.selectedFicha.CoolingTime} turnos para usarla nuevamente.[/]");
             System.Threading.Thread.Sleep(2000);
             return true;
         }
@@ -203,27 +198,9 @@ class Program
     }
 
 
-    private static void Restart()
+    public static void FichaInfo(Ficha ficha, int steps, int currentCoolingTime)
     {
-        AnsiConsole.MarkupLine("Deseas volver a jugar?\n1- Si\n0- No");
-        if (int.TryParse(Console.ReadLine(), out int reset))
-        {
-            if (reset == 1)
-            {
-                Console.Clear();
-                AnsiConsole.Markup("[cyan]Reiniciando juego...[/]");
-                System.Threading.Thread.Sleep(2000);
-                Console.Clear();
-                Juego();
-            }
-
-        }
-
-    }
-
-    public static void FichaInfo(Ficha ficha , int steps , int currentCoolingTime)
-    {
-        AnsiConsole.MarkupLine($"[cyan]Movimientos restante:[/] {ficha.Velocidad - steps}");
+        AnsiConsole.MarkupLine($"[cyan]Movimientos restante:[/] {steps}");
         AnsiConsole.MarkupLine($"[cyan]Cooldown de habilidad:[/] {ficha.CoolingTime} turnos");
         AnsiConsole.MarkupLine($"[cyan]Estado:[/] {ficha.Estado}");
     }

@@ -54,10 +54,11 @@ public class GameLogic
         Console.Clear();
 
 
+        List<Ficha> FichasDisponibles = new List<Ficha>(Ficha.FichasDisponibles);
+
         // fichas
         foreach (Player jugador in Player.jugadores)
         {
-            List<Ficha> FichasDisponibles = new List<Ficha>(Ficha.FichasDisponibles);
 
             Console.Clear();
 
@@ -84,6 +85,7 @@ public class GameLogic
                     jugador.selectedFicha = fichaSeleccionada;
                     AnsiConsole.MarkupLine($"[green bold]Has seleccionado: {fichaSeleccionada.Nombre}[/]");
                     seleccionValida = true;
+                    FichasDisponibles.RemoveAt(eleccion - 1);
                 }
                 else
                 {
@@ -99,18 +101,18 @@ public class GameLogic
 
         //nivel de dificultad
         AnsiConsole.Markup($"[cyan]Ingrese el nivel de dificultad por su indice correspondiente:\n[/]");
-        Console.WriteLine("1- FACIL\n2- INTERMEDIO\n3- DIFICIL\n");
+        Console.WriteLine("1- Facil\n2- Normal\n3- Dificil\n");
 
         int dificultad;
 
         while (true)
         {
-            Console.WriteLine("Selecciona la dificultad: 1 (Fácil), 2 (Medio), 3 (Difícil)");
+
             string? input = Console.ReadLine();
 
             if (int.TryParse(input, out dificultad) && dificultad >= 1 && dificultad <= 3)
             {
-                break; 
+                break;
             }
 
             AnsiConsole.MarkupLine("[red]Opción no válida, intenta de nuevo.[/]");
@@ -118,16 +120,16 @@ public class GameLogic
         switch (dificultad)
         {
             case 1:
-                Board.dimension = 13;
-                Board.center = 13 / 2;
+                Board.dimension = 9;
+                Board.center = 9 / 2;
                 break;
             case 2:
-                Board.dimension = 15;
-                Board.center = 15 / 2;
+                Board.dimension = 11;
+                Board.center = 11 / 2;
                 break;
             case 3:
-                Board.dimension = 19;
-                Board.center = 19 / 2;
+                Board.dimension = 13;
+                Board.center = 13 / 2;
                 break;
         }
         Console.Clear();
