@@ -2,80 +2,91 @@
 
 ![Portada Juego Image](sky-maze-game/portada-juego.png)
 
-_Sky Maze_ es un juego multijugador que acepta hasta cuatro jugadores, cada uno elije entre seis fichas disponibles -cada una con una habilidad diferente- y se mueve a través de las casillas de un tablero de dimensión n x n con el objetivo de esquivando trampas, llegar al centro del tablero, y escapar.
+
+_Sky Maze_ es un juego multijugador que acepta hasta cuatro jugadores, cada uno elije entre seis fichas disponibles -cada una con una habilidad diferente- y se mueve a través de las casillas de un tablero de dimensión n x n con el objetivo de, esquivando trampas, llegar al centro del tablero, y escapar del cielo.
+
 
 ## **INSTALACION**
 
+
 1. Requisitos para su instalación
    - Verificar tener [DOTNET SDK](https://dotnet.microsoft.com/en-us/download) previamente instalado
+
+
 
 2. Clonar el repositorio:
 
    - ```git clone https://github.com/p4tt7/sky-maze.git```
 
+
+
 3. Build repositiorio:
 
    - ```dotnet build```
+
+
 
 4. Correr el juego:
 
    - ```dotnet run```
 
+
+
 ## **INSTRUCCIONES**
 
-### _MENU PRINCIPAL_
-En primera instancia los jugadores se encontrarán con el Menú Princpal como punto de inicio, donde tendrán las opciones:
+### _MENU PRINCIPAL_  
+En primera instancia los jugadores se encontrarán con el Menú Princpal como punto de inicio, donde tendrán las opciones:  
 
 
- - _PLAY:_ Inicia el juego, y pasa al Menú de Selección
+ - _PLAY:_ Inicia el juego, y pasa al Menú de Selección  
 
- - _EXIT:_ Cierra el juego por completo.
-
-
-### _MENU DE SELECCION_
-Al seleccionar _PLAY_ ingresando su índice correspondiente _1_, se brindan instrucciones basicas para el uso del juego, los cuales pueden ser omitidos presionando _ENTER_ y asi pasar al siguiente menu, el Menu de Seleccion, aqui los jugadores podran seleccionaar:
-
- - Cantidad de jugadores: Se pueden ingresar hasta 4, e inmediatamente se introduce el nombre de cada uno
-
- - Ficha: Cada jugador elige la ficha que usara en la partida, cada una tiene una habilidad asociada que puede ser activada al inicio de la partida:
+ - _EXIT:_ Cierra el juego por completo.  
 
 
+### _MENU DE SELECCION_  
+Al seleccionar _PLAY_ ingresando su índice correspondiente _1_, se brindan instrucciones basicas para el uso del juego, los cuales pueden ser omitidos presionando _ENTER_ y asi pasar al siguiente menu, el Menu de Seleccion, aqui los jugadores podran seleccionar:  
 
+ - Cantidad de jugadores: Se pueden ingresar hasta 4, e inmediatamente se introduce el nombre de cada uno  
+
+ - Ficha: Cada jugador elige la ficha que usara en la partida, cada una tiene una habilidad asociada que puede ser activada al inicio de la partida:  
+
+
+  
 ### Arcoiris 🌈
 | Propiedad     | Valor         |
 |---------------|---------------|
 | Velocidad     | 4             |
 | CoolingTime   | 2             |
 | Habilidad     |  Iris Healing       |
-
+  
 ### Luna Nueva 🌑
 | Propiedad     | Valor         |
 |---------------|---------------|
 | Velocidad     | 3             |
 | CoolingTime   | 4             |
 | Habilidad     | Slowing Shadow       |
-
+  
 ### Viento 🍃
 | Propiedad     | Valor         |
 |---------------|---------------|
 | Velocidad     | 2             |
 | CoolingTime   | 3             |
 | Habilidad     | Rafaga Acelerada  |
-
+  
 ### Nube ⛅
 | Propiedad     | Valor         |
 |---------------|---------------|
 | Velocidad     | 3             |
 | CoolingTime   | 5             |
 | Habilidad     | Piercing Cloud           |
-
+  
 ### Estrella ✨
 | Propiedad     | Valor         |
 |---------------|---------------|
 | Velocidad     | 3             |
 | CoolingTime   | 4             |
 | Habilidad     | Star Daze         |
-
+  
 ### Eclipse 🌘
 | Propiedad     | Valor         |
 |---------------|---------------|
@@ -83,16 +94,16 @@ Al seleccionar _PLAY_ ingresando su índice correspondiente _1_, se brindan inst
 | CoolingTime   | 5             |
 | Habilidad     | Mimic Eclipse       |
 
+  
 
-
-
+    
 **Iris Healing:** Es capaz de curarse del estado impuesto por una trampa.
 
-
+    
 
 **Slowing Shadow:** Genera casillas aleatorias sobre el laberinto capaz de reducir la velocidad de los jugadores y evitar que lleguen antes a la meta.
 
-
+    
 
 **Rafaga Acelerada:** Aumenta la velocidad de la ficha en 10, siendo capaz de moverse hasta 12 casillas por turno.
 
