@@ -14,6 +14,8 @@ public class Ficha
 
     public State Estado { get; set; }
     public int StateDuration { get; set; }
+    public int CurrentCoolingTime { get; set; }
+
 
     public enum State
     {
@@ -62,6 +64,8 @@ public class Ficha
 
                 indexPosition++;
             }
+            jugador.selectedFicha.CurrentCoolingTime = 0;
+
         }
     }
 

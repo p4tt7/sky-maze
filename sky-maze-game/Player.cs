@@ -13,7 +13,6 @@ public class Player
     {
         Nombre = nombre;
         PosicionInicial = posicion;
-   
     }
 
     public static List<Position> posicionesIniciales = new List<Position>

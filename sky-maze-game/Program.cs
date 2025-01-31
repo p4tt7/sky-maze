@@ -99,9 +99,9 @@ class Program
 
         foreach (Player jugador in Player.jugadores)
         {
-            if (jugador.selectedFicha.CoolingTime > 0)
+            if (jugador.selectedFicha.CurrentCoolingTime > 0)
             {
-                jugador.selectedFicha.CoolingTime--;
+                jugador.selectedFicha.CurrentCoolingTime--;
             }
         }
 
@@ -110,9 +110,9 @@ class Program
 
     public static void HandlePlayerTurn(Player jugador)
     {
-        if (jugador.selectedFicha.CoolingTime > 0)
+        if (jugador.selectedFicha.CurrentCoolingTime > 0)
         {
-            jugador.selectedFicha.CoolingTime--;
+            jugador.selectedFicha.CurrentCoolingTime--;
         }
 
         if (!isSolitaire)
@@ -138,7 +138,7 @@ class Program
                     if (Position.Movement(jugador.selectedFicha))
                     {
                         steps--;
-                        FichaInfo(jugador.selectedFicha, steps, jugador.selectedFicha.CoolingTime);
+                        FichaInfo(jugador.selectedFicha, steps, jugador.selectedFicha.CurrentCoolingTime);
                         System.Threading.Thread.Sleep(1000);
 
                         if (Position.IsWinning())
@@ -149,7 +149,7 @@ class Program
                             GameUI.WinArt();
                             System.Threading.Thread.Sleep(2000);
                             Console.Clear();
-                            break;;
+                            break; ;
                         }
                     }
 
@@ -179,18 +179,16 @@ class Program
 
     public static bool HandleAbility(Player jugador)
     {
-        if (jugador.selectedFicha.CoolingTime == 0)
+        if (jugador.selectedFicha.CurrentCoolingTime == 0)
         {
             Ficha.UseHabilidad(jugador.selectedFicha);
-
-            Ficha originalFicha = Ficha.FichasDisponibles.FirstOrDefault(f => f.Habilidad == jugador.selectedFicha.Habilidad);
-            jugador.selectedFicha.CoolingTime = originalFicha.CoolingTime;
+            jugador.selectedFicha.CurrentCoolingTime = jugador.selectedFicha.CoolingTime;
             System.Threading.Thread.Sleep(2000);
             return true;
         }
         else
         {
-            AnsiConsole.MarkupLine($"[red]Habilidad en enfriamiento, espera {jugador.selectedFicha.CoolingTime} turnos más.[/]");
+            AnsiConsole.MarkupLine($"[red]Habilidad en enfriamiento.[/]");
             System.Threading.Thread.Sleep(2000);
             return false;
         }
@@ -201,7 +199,7 @@ class Program
     public static void FichaInfo(Ficha ficha, int steps, int currentCoolingTime)
     {
         AnsiConsole.MarkupLine($"[cyan]Movimientos restante:[/] {steps}");
-        AnsiConsole.MarkupLine($"[cyan]Cooldown de habilidad:[/] {ficha.CoolingTime} turnos");
+        AnsiConsole.MarkupLine($"[cyan]Cooldown de habilidad:[/] {ficha.CurrentCoolingTime} turnos");
         AnsiConsole.MarkupLine($"[cyan]Estado:[/] {ficha.Estado}");
     }
 }
