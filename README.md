@@ -1,5 +1,7 @@
 # SKY MAZE
 
+![Portada Juego Image](sky-maze/sky-maze-game/portada-juego.png)
+
 _Sky Maze_ es un juego multijugador que acepta hasta cuatro jugadores, cada uno elije entre seis fichas disponibles -cada una con una habilidad diferente- y se mueve a traves de las casillas de un tablero de dimension nxn con el objetivo de esquivar las distintas trampas para llegar al centro del tablero. La dimension del tablero y la cantidad de trampas esta dado por el nivel de dificultad a elegir por el usuario: facil, intermedio, dificil.
 
 En primera instancia el usuario tendra la opcion de comenzar el juego (presionando 1) o por el contrario cerrarlo si asi desea (presionando 0). Una vez se elija la opcion JUGAR se pasa al Menu de Seleccion, donde se introduce la cantidad de jugadores, asi como el nombre de cada uno, se eligen las fichas correspondientes y el nivel de dificultad. 
