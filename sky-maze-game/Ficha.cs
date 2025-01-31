@@ -15,6 +15,7 @@ public class Ficha
     public State Estado { get; set; }
     public int StateDuration { get; set; }
     public int CurrentCoolingTime { get; set; }
+    public int CurrentVelocidad { get; set; }
 
 
     public enum State
@@ -61,10 +62,12 @@ public class Ficha
                 jugador.PosicionInicial = new Position(pos.x, pos.y);
                 Board.board[pos.x, pos.y] = jugador.selectedFicha.Simbolo;
                 jugador.selectedFicha.Posicion = new Position(pos.x, pos.y);
+                jugador.selectedFicha.CurrentVelocidad = jugador.selectedFicha.Velocidad;
 
                 indexPosition++;
             }
             jugador.selectedFicha.CurrentCoolingTime = 0;
+            
 
         }
     }
@@ -135,29 +138,29 @@ public class Ficha
                 continue;
             }
 
-         
+
             if (newX >= 0 && newX < Board.dimension && newY >= 0 && newY < Board.dimension)
             {
                 int oldX = ficha.Posicion.x;
                 int oldY = ficha.Posicion.y;
 
-             
+
                 if (originalContents.ContainsKey((oldX, oldY)))
                 {
                     Board.board[oldX, oldY] = originalContents[(oldX, oldY)];
                 }
 
-                
+
                 if (!originalContents.ContainsKey((newX, newY)))
                 {
                     originalContents[(newX, newY)] = Board.board[newX, newY];
                 }
 
-                
+
                 ficha.Posicion.x = newX;
                 ficha.Posicion.y = newY;
 
-               
+
                 Board.board[newX, newY] = ficha.Simbolo;
             }
             else
@@ -168,14 +171,14 @@ public class Ficha
             }
         }
 
-       
+
         foreach (var pos in originalContents.Keys)
         {
             if (pos != (ficha.Posicion.x, ficha.Posicion.y))
             {
                 Board.board[pos.x, pos.y] = originalContents[pos];
             }
-        
+
         }
 
         AnsiConsole.MarkupLine("[grey]Has terminado de volar.[/]");
@@ -355,15 +358,17 @@ public class Ficha
     {
         if (ficha.Estado == State.Congelado)
         {
-            AnsiConsole.MarkupLine("[blue]¡Estás congelado! No puedes moverte por este turno[/]\n");
-            ficha.Velocidad = 0;
+            AnsiConsole.MarkupLine("[blue]¡Estás congelado![/]\n");
+            System.Threading.Thread.Sleep(2000);
+            ficha.CurrentVelocidad = 0;
             ficha.StateDuration--;
 
             if (ficha.StateDuration <= 0)
             {
                 ficha.Estado = State.Normal;
-                ficha.Velocidad = Ficha.FichasDisponibles.FirstOrDefault(f => f.Habilidad == ficha.Habilidad).Velocidad;
-                AnsiConsole.MarkupLine("[green]¡Te has descongelado y puedes moverte de nuevo![/]\n");
+                ficha.CurrentVelocidad = ficha.Velocidad;
+                AnsiConsole.MarkupLine("[green]¡Te has descongelado y puedes moverte de nuevo en el proximo turno![/]\n");
+                System.Threading.Thread.Sleep(2000);
             }
         }
 
@@ -409,12 +414,20 @@ public class Ficha
         else if (ficha.Estado == State.Slower)
         {
             AnsiConsole.MarkupLine("[grey]¡Estás ralentizado por una telaraña![/]\n");
+            System.Threading.Thread.Sleep(2000);           
+
+            if (ficha.Velocidad > 1)
+            {
+                ficha.CurrentVelocidad = Math.Max(1, ficha.Velocidad - 2); 
+            }
+
             ficha.StateDuration--;
 
             if (ficha.StateDuration <= 0)
             {
                 ficha.Estado = State.Normal;
-                ficha.Velocidad = Ficha.FichasDisponibles.FirstOrDefault(f => f.Habilidad == ficha.Habilidad).Velocidad;
+                ficha.CurrentVelocidad = ficha.Velocidad;
+                
                 AnsiConsole.MarkupLine("[green]¡Te has liberado de la telaraña y recuperas tu velocidad![/]\n");
             }
         }

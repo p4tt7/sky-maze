@@ -198,7 +198,7 @@ class Program
 
     public static void FichaInfo(Ficha ficha, int steps, int currentCoolingTime)
     {
-        AnsiConsole.MarkupLine($"[cyan]Movimientos restante:[/] {steps}");
+        AnsiConsole.MarkupLine($"[cyan]Movimientos restantes:[/] {steps}");
         AnsiConsole.MarkupLine($"[cyan]Cooldown de habilidad:[/] {ficha.CurrentCoolingTime} turnos");
         AnsiConsole.MarkupLine($"[cyan]Estado:[/] {ficha.Estado}");
     }

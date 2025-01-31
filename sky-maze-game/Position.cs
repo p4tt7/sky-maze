@@ -70,15 +70,29 @@ public class Position
             ficha.Posicion.x = newX;
             ficha.Posicion.y = newY;
 
-            Board.board[lastX, lastY] = "c";
+            Position nuevaPosicion = new Position(newX, newY);
 
-            Trampa.DetectarTrampa(ficha);
+            string trampaTipo = Board.board[newX, newY];
+            if (trampaTipo == "⚡")
+            {
+                nuevaPosicion = Trampa.Rayo(ficha);
+            }
+            else if (trampaTipo == "🌀")
+            {
+                nuevaPosicion = Trampa.Skyhole(ficha);
+            }
+            else
+            {
+                Trampa.DetectarTrampa(ficha);
+            }
+
+            Board.board[lastX, lastY] = "c";
 
             if (Board.board[newX, newY] == "🕸️")
             {
                 ficha.Estado = Ficha.State.Slower;
                 ficha.StateDuration = 3;
-                ficha.Velocidad = Math.Max(1, ficha.Velocidad - 2);
+                ficha.CurrentVelocidad = Math.Max(1, ficha.Velocidad - 2);
                 AnsiConsole.MarkupLine("[red]¡Has sido ralentizado por una telaraña![/]");
             }
 
