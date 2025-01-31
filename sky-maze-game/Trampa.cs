@@ -138,7 +138,7 @@ public class Trampa
         ficha.StateDuration = 5;
         AnsiConsole.MarkupLine("[blue]Estás mojado, cuidado con resbalar.[/]\n");
         System.Threading.Thread.Sleep(2000);
-        
+
 
         if (Ficha.rand.Next(0, 2) == 0)
         {
@@ -171,10 +171,13 @@ public class Trampa
     {
         Board.board[ficha.Posicion.x, ficha.Posicion.y] = "c";
 
+        int newX, newY;
 
-        int newX = random.Next(0, Board.dimension);
-        int newY = random.Next(0, Board.dimension);
-
+        do
+        {
+            newX = random.Next(0, Board.dimension);
+            newY = random.Next(0, Board.dimension);
+        } while (Board.board[newX, newY] != "c");
 
         ficha.Posicion = new Position(newX, newY);
         Board.board[newX, newY] = ficha.Simbolo;
@@ -185,26 +188,27 @@ public class Trampa
 
     public static void Rayo(Ficha ficha)
     {
-
         Player? jugador = Player.jugadores.FirstOrDefault(j => j.selectedFicha == ficha);
-
         Position posicionInicial = jugador.PosicionInicial;
-
         int oldX = ficha.Posicion.x;
         int oldY = ficha.Posicion.y;
 
-        Board.board[oldX, oldY] = "c";
+        if (oldX >= 0 && oldX < Board.dimension && oldY >= 0 && oldY < Board.dimension)
+        {
+            Board.board[oldX, oldY] = "c";
+        }
 
-        ficha.Posicion = posicionInicial;
+        ficha.Posicion = new Position(posicionInicial.x, posicionInicial.y);
 
+        if (ficha.Posicion.x >= 0 && ficha.Posicion.x < Board.dimension && ficha.Posicion.y >= 0 && ficha.Posicion.y < Board.dimension)
+        {
         Board.board[ficha.Posicion.x, ficha.Posicion.y] = ficha.Simbolo;
+        }
 
         AnsiConsole.Markup("[yellow]¡Has sido golpeado por un rayo y vuelves al inicio![/]");
         System.Threading.Thread.Sleep(2000);
 
-        
     }
-
 }
 
 

@@ -3,10 +3,11 @@ namespace sky_maze_game.GameLogic;
 public class Player
 {
     public string? Nombre { get; set; }
-    public Position PosicionInicial { get; }
+    public Position PosicionInicial { get; set; }
 
     public Ficha? selectedFicha { get; set; }
     public static List<Player> jugadores = new List<Player>();
+    public int Index { get; set; }
 
     public Player(string nombre, Position posicion)
     {

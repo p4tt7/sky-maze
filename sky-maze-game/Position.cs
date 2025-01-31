@@ -72,6 +72,11 @@ public class Position
 
             Trampa.DetectarTrampa(ficha);
 
+            if(Board.board[newX, newY] == "🕸️")
+            {
+                ficha.Velocidad = Math.Max(1, ficha.Velocidad - 2);
+            }
+
             Board.board[lastX, lastY] = "c";
 
 
@@ -86,13 +91,6 @@ public class Position
         return false;
     }
 
-
-    public static void FichaInfo(Ficha ficha)
-    {
-        Console.WriteLine($"Movimientos restante: {ficha.Velocidad}");
-        Console.WriteLine($"Cooldown de habilidad: {ficha.CoolingTime} turnos\n");
-        Console.WriteLine($"Estado: {ficha.Estado}");
-    }
 
     public static bool IsWall(Ficha ficha, int newX, int newY)
     {

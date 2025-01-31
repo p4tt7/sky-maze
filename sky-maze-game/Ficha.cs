@@ -35,8 +35,8 @@ public class Ficha
     public HabilidadType Habilidad { get; set; }
 
     public static List<Ficha> FichasDisponibles = new List<Ficha>{
-    new Ficha {Nombre = "Arcoiris" , Simbolo = "🌈" , Velocidad = 4 , CoolingTime = 1 , Habilidad = HabilidadType.Rainbow},
-    new Ficha {Nombre = "Luna Nueva" , Simbolo = "🌑" , Velocidad = 3 , CoolingTime = 1 , Habilidad = HabilidadType.Shadow},
+    new Ficha {Nombre = "Arcoiris" , Simbolo = "🌈" , Velocidad = 4 , CoolingTime = 3 , Habilidad = HabilidadType.Rainbow},
+    new Ficha {Nombre = "Luna Nueva" , Simbolo = "🌑" , Velocidad = 3 , CoolingTime = 3 , Habilidad = HabilidadType.Shadow},
     new Ficha {Nombre = "Viento" , Simbolo = "🍃" , Velocidad = 2 , CoolingTime = 1 , Habilidad = HabilidadType.WindVelocity},
     new Ficha {Nombre = "Nube" , Simbolo = "⛅" , Velocidad = 3 , CoolingTime = 1 , Habilidad = HabilidadType.Fly},
     new Ficha {Nombre = "Estrella" , Simbolo = "✨" , Velocidad = 3 , CoolingTime = 1 , Habilidad = HabilidadType.Star},
@@ -52,8 +52,11 @@ public class Ficha
             if (jugador.selectedFicha != null)
             {
                 Position pos = Position.InitialPositionFichas[indexPosition];
+                jugador.Index = indexPosition;
+                jugador.PosicionInicial = new Position(pos.x, pos.y);
                 Board.board[pos.x, pos.y] = jugador.selectedFicha.Simbolo;
-                jugador.selectedFicha.Posicion = pos;
+                jugador.selectedFicha.Posicion = new Position(pos.x, pos.y);
+
                 indexPosition++;
             }
         }
@@ -67,6 +70,8 @@ public class Ficha
         ficha.Velocidad += 10;
 
         Console.WriteLine("Ahora eres diez veces mas rapido.\n");
+
+        Task.Delay(5000).ContinueWith(_ => ficha.Velocidad -= 10);
     }
 
 
@@ -76,6 +81,7 @@ public class Ficha
         System.Threading.Thread.Sleep(2200);
 
         int pasos = ficha.Velocidad;
+        Position originalPosition = new Position(ficha.Posicion.x, ficha.Posicion.y);
 
         for (int i = 0; i < pasos; i++)
         {
@@ -83,11 +89,8 @@ public class Ficha
             GameUI.GameUI.PrintBoard();
             ConsoleKeyInfo teclaPresionada = Console.ReadKey();
 
-            int lastX = ficha.Posicion.x;
-            int lastY = ficha.Posicion.y;
-
-            int newX = lastX;
-            int newY = lastY;
+            int newX = ficha.Posicion.x;
+            int newY = ficha.Posicion.y;
 
             if (teclaPresionada.Key == ConsoleKey.W || teclaPresionada.Key == ConsoleKey.UpArrow)
             {
@@ -116,18 +119,19 @@ public class Ficha
                 continue;
             }
 
-            string nextCell = Board.board[newX, newY];
-
-            Board.board[newX, newY] = ficha.Simbolo;
-            ficha.Posicion.x = newX;
-            ficha.Posicion.y = newY;
-
-            Board.board[lastX, lastY] = nextCell;
-
-            Console.Clear();
-            GameUI.GameUI.PrintBoard();
-            System.Threading.Thread.Sleep(500);
+            if (newX >= 0 && newX < Board.dimension && newY >= 0 && newY < Board.dimension)
+            {
+                ficha.Posicion.x = newX;
+                ficha.Posicion.y = newY;
+            }
+            else
+            {
+                Console.WriteLine("Movimiento no válido.");
+                System.Threading.Thread.Sleep(1000);
+            }
         }
+
+        Board.board[ficha.Posicion.x, ficha.Posicion.y] = ficha.Simbolo;
     }
 
     public static void Eclipse(Ficha ficha)
@@ -138,9 +142,20 @@ public class Ficha
         int index = 1;
         foreach (Player jugador in Player.jugadores)
         {
-            Console.WriteLine($"{index}. {jugador.selectedFicha.Nombre} ({jugador.selectedFicha.Simbolo}) Habilidad: {jugador.selectedFicha.Habilidad}");
-            index++;
+            if (jugador.selectedFicha != ficha)
+            {
+                Console.WriteLine($"{index}. {jugador.selectedFicha.Nombre} ({jugador.selectedFicha.Simbolo}) Habilidad: {jugador.selectedFicha.Habilidad}");
+                index++;
+            }
+
+            if (Player.jugadores.Count == 1)
+            {
+                Console.WriteLine("No hay habilidades que copiar.");
+                break;
+
+            }
         }
+
 
         int indice;
         while (!int.TryParse(Console.ReadLine(), out indice) || indice < 1 || indice >= index)
@@ -174,27 +189,73 @@ public class Ficha
 
     public static void Star(Ficha ficha)
     {
-        Console.WriteLine("Ha activado la habilidad de Star.");
+        AnsiConsole.MarkupLine("[yellow]Ha activado la habilidad de Star.[/]");
         System.Threading.Thread.Sleep(1500);
-        Position currentPosition = ficha.Posicion;
 
-        int[] dx = { -1, 1, 0, 0, -1, 1, -1, 1 };
-        int[] dy = { 0, 0, -1, 1, -1, -1, 1, 1 };
+        int pasos = ficha.Velocidad;
+        Position originalPosition = new Position(ficha.Posicion.x, ficha.Posicion.y);
 
-        for (int i = 0; i < dx.Length; i++)
+        for (int i = 0; i < pasos; i++)
         {
-            int newX = currentPosition.x + dx[i];
-            int newY = currentPosition.y + dy[i];
+            Console.Clear();
+            GameUI.GameUI.PrintBoard();
+            ConsoleKeyInfo teclaPresionada = Console.ReadKey();
+
+            int newX = ficha.Posicion.x;
+            int newY = ficha.Posicion.y;
+
+            if (teclaPresionada.Key == ConsoleKey.W || teclaPresionada.Key == ConsoleKey.UpArrow)
+            {
+                if (ficha.Posicion.x > 0) newX--;
+                else { Console.WriteLine("Movimiento no válido"); System.Threading.Thread.Sleep(1000); continue; }
+            }
+            else if (teclaPresionada.Key == ConsoleKey.A || teclaPresionada.Key == ConsoleKey.LeftArrow)
+            {
+                if (ficha.Posicion.y > 0) newY--;
+                else { Console.WriteLine("Movimiento no válido"); System.Threading.Thread.Sleep(1000); continue; }
+            }
+            else if (teclaPresionada.Key == ConsoleKey.S || teclaPresionada.Key == ConsoleKey.DownArrow)
+            {
+                if (ficha.Posicion.x < Board.dimension - 1) newX++;
+                else { Console.WriteLine("Movimiento no válido"); System.Threading.Thread.Sleep(1000); continue; }
+            }
+            else if (teclaPresionada.Key == ConsoleKey.D || teclaPresionada.Key == ConsoleKey.RightArrow)
+            {
+                if (ficha.Posicion.y < Board.dimension - 1) newY++;
+                else { Console.WriteLine("Movimiento no válido"); System.Threading.Thread.Sleep(1000); continue; }
+            }
+            else
+            {
+                Console.WriteLine("Tecla no reconocida.");
+                System.Threading.Thread.Sleep(1000);
+                continue;
+            }
 
             if (newX >= 0 && newX < Board.dimension && newY >= 0 && newY < Board.dimension)
             {
-                if (Board.board[newX, newY] == "w" && !Position.IsFicha(newX, newY))
+                Board.board[ficha.Posicion.x, ficha.Posicion.y] = "c";
+
+                if (Board.board[newX, newY] == "w" || Board.board[newX, newY] == "🕸️")
                 {
                     Board.board[newX, newY] = "c";
                 }
+
+                ficha.Posicion.x = newX;
+                ficha.Posicion.y = newY;
+
+                Board.board[newX, newY] = ficha.Simbolo;
+            }
+            else
+            {
+                Console.WriteLine("Movimiento no válido.");
+                System.Threading.Thread.Sleep(1000);
             }
         }
+
+        Board.board[originalPosition.x, originalPosition.y] = "c";
     }
+
+
 
     public static void Shadow(Ficha ficha)
     {
@@ -257,23 +318,16 @@ public class Ficha
         }
         else if (ficha.Estado == State.Mojado)
         {
-            Trampa.Rain(ficha); 
+            Trampa.Rain(ficha);
             ficha.StateDuration--;
 
             if (ficha.StateDuration <= 0)
             {
-                ficha.Estado = State.Normal; 
-                ficha.Velocidad = 1; 
+                ficha.Estado = State.Normal;
+                ficha.Velocidad = 1;
             }
         }
     }
-
-
-
-
-
-
-
 
 
 }

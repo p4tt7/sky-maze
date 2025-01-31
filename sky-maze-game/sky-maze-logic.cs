@@ -100,7 +100,21 @@ public class GameLogic
         //nivel de dificultad
         AnsiConsole.Markup($"[cyan]Ingrese el nivel de dificultad por su indice correspondiente:\n[/]");
         Console.WriteLine("1- FACIL\n2- INTERMEDIO\n3- DIFICIL\n");
-        int dificultad = int.Parse(Console.ReadLine());
+
+        int dificultad;
+
+        while (true)
+        {
+            Console.WriteLine("Selecciona la dificultad: 1 (Fácil), 2 (Medio), 3 (Difícil)");
+            string? input = Console.ReadLine();
+
+            if (int.TryParse(input, out dificultad) && dificultad >= 1 && dificultad <= 3)
+            {
+                break; 
+            }
+
+            AnsiConsole.MarkupLine("[red]Opción no válida, intenta de nuevo.[/]");
+        }
         switch (dificultad)
         {
             case 1:
@@ -114,10 +128,6 @@ public class GameLogic
             case 3:
                 Board.dimension = 19;
                 Board.center = 19 / 2;
-                break;
-
-            default:
-                AnsiConsole.MarkupLine("[red]Opción no válida, intenta de nuevo.[/]");
                 break;
         }
         Console.Clear();

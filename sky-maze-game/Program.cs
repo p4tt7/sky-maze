@@ -5,6 +5,9 @@ using System.ComponentModel.DataAnnotations;
 
 class Program
 {
+
+    public static bool isSolitaire = false;
+
     public static void Main()
     {
 
@@ -28,12 +31,18 @@ class Program
                 System.Threading.Thread.Sleep(2000);
                 Console.Clear();
                 GameUI.Presentation();
-                ConsoleKeyInfo tecla = Console.ReadKey(true);
-                if (tecla.Key == ConsoleKey.Enter)
+
+                while (true) 
                 {
-                    Console.Clear();
-                    Juego();
+                    ConsoleKeyInfo tecla = Console.ReadKey(true);
+                    if (tecla.Key == ConsoleKey.Enter)
+                    {
+                        Console.Clear();
+                        Juego();
+                        break; 
+                    }
                 }
+
             }
             else if (state == "0")
             {
@@ -50,12 +59,22 @@ class Program
         Console.WriteLine("Cargando...");
         System.Threading.Thread.Sleep(2000);
         Console.Clear();
+        //Board.board = new string[Board.dimension,Board.dimension];
         Board.BoardGenerator();
         int[,] distancias = Board.DistanceValidator(Board.board, 0, 0);
         Board.ValidatedBoard(Board.board, distancias);
         Trampa.TrampaGenerator();
         Ficha.FichaInitializer(Player.jugadores);
         GameUI.PrintBoard();
+
+        if (Player.jugadores.Count == 1)
+        {
+            isSolitaire = true;
+        }
+        else
+        {
+            isSolitaire = false;
+        }
 
     }
 
@@ -92,7 +111,12 @@ class Program
 
     public static void HandlePlayerTurn(Player jugador)
     {
-        AnsiConsole.MarkupLine($"[cyan]Jugador {jugador.Nombre}, es tu turno[/]");
+
+        if (!isSolitaire)
+        {
+            AnsiConsole.MarkupLine($"[cyan]Jugador {jugador.Nombre}, es tu turno[/]");
+        }
+
         AnsiConsole.MarkupLine($"[cyan]Presione ENTER para moverse o X para usar su habilidad[/]");
 
         Ficha.ApplyTrapEffects(jugador.selectedFicha);
@@ -106,11 +130,13 @@ class Program
             if (teclaPresionada.Key == ConsoleKey.Enter)
             {
                 int steps = jugador.selectedFicha.Velocidad;
-                while(steps > 0)
+                while (steps > 0)
                 {
                     if (Position.Movement(jugador.selectedFicha))
                     {
                         steps--;
+                        FichaInfo(jugador.selectedFicha , steps, jugador.selectedFicha.CoolingTime);
+                        System.Threading.Thread.Sleep(2000);
 
                         if (Position.IsWinning())
                         {
@@ -125,7 +151,8 @@ class Program
                         }
                     }
 
-                    else{
+                    else
+                    {
                         continue;
                     }
 
@@ -136,7 +163,7 @@ class Program
             {
                 bool abilityUsed = HandleAbility(jugador);
 
-                if(!abilityUsed)
+                if (!abilityUsed)
                 {
                     AnsiConsole.MarkupLine("[red]No puedes usar la habilidad, pero puedes moverte.[/]");
                 }
@@ -157,7 +184,11 @@ class Program
         if (jugador.selectedFicha.CoolingTime == 0)
         {
             Ficha.UseHabilidad(jugador.selectedFicha);
-            jugador.selectedFicha.CoolingTime = jugador.selectedFicha.CoolingTime;
+
+            Ficha originalFicha = Ficha.FichasDisponibles.FirstOrDefault(f => f.Habilidad == jugador.selectedFicha.Habilidad);
+            jugador.selectedFicha.CoolingTime = originalFicha.CoolingTime;
+
+
             AnsiConsole.MarkupLine($"[cyan]Habilidad activada, espera {jugador.selectedFicha.CoolingTime} turnos para usarla nuevamente.[/]");
             System.Threading.Thread.Sleep(2000);
             return true;
@@ -188,5 +219,12 @@ class Program
 
         }
 
+    }
+
+    public static void FichaInfo(Ficha ficha , int steps , int currentCoolingTime)
+    {
+        AnsiConsole.MarkupLine($"[cyan]Movimientos restante:[/] {ficha.Velocidad - steps}");
+        AnsiConsole.MarkupLine($"[cyan]Cooldown de habilidad:[/] {ficha.CoolingTime} turnos");
+        AnsiConsole.MarkupLine($"[cyan]Estado:[/] {ficha.Estado}");
     }
 }
