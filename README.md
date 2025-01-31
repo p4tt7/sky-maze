@@ -153,12 +153,11 @@ Asi, la cantidad de trampas se reparte proporcional a la cantidad de casillas qu
 
    
  3. Obstaculos: Delimitan el laberinto, representados por un "⬜" Un movimiento regular no permitira a la ficha avanzar si una casilla es pared, al menos que la habilidad inherente a esta sea capaz de evitarlos.
- 4. 
+
 _NOTA: Si en el movimiento, los jugadores chocan con un obstaculo, no se contara como un  movimiento invalido_
 
 
-
- 5. Trampas: Se generan aleatoriamente por el tablero, se clasifican en dos tipos: _Instantaneas y Continuas_, donde la principal diferencia es la duracion de su efecto sobre el jugador.
+ 4. Trampas: Se generan aleatoriamente por el tablero, se clasifican en dos tipos: _Instantaneas y Continuas_, donde la principal diferencia es la duracion de su efecto sobre el jugador.
 
 ### Copo de Nieve
 | Propiedad | Valor        |
