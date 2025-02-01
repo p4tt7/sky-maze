@@ -224,17 +224,17 @@ En _Sky Maze_, tienes varias opciones para mover tu ficha y utilizar habilidades
 
 
 **Flechas del Teclado:**
--Flecha Arriba: Mueve tu ficha hacia arriba.
--Flecha Abajo: Mueve tu ficha hacia abajo.
--Flecha Izquierda: Mueve tu ficha hacia la izquierda.
--Flecha Derecha: Mueve tu ficha hacia la derecha.
+ - Flecha Arriba: Mueve tu ficha hacia arriba.
+ - Flecha Abajo: Mueve tu ficha hacia abajo.
+ - Flecha Izquierda: Mueve tu ficha hacia la izquierda.
+ - Flecha Derecha: Mueve tu ficha hacia la derecha.
 
 
 **Teclas WASD:**
--W: Equivalente a la flecha arriba.
--A: Equivalente a la flecha izquierda.
--S: Equivalente a la flecha abajo.
--D: Equivalente a la flecha derecha.
+ - W: Equivalente a la flecha arriba.
+ - A: Equivalente a la flecha izquierda.
+ - S: Equivalente a la flecha abajo.
+ - D: Equivalente a la flecha derecha.
 
 
 **X:**
