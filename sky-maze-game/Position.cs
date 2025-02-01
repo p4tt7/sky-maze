@@ -70,6 +70,14 @@ public class Position
             ficha.Posicion.x = newX;
             ficha.Posicion.y = newY;
 
+            if (Board.board[newX, newY] == "🕸️")
+            {
+                ficha.Estado = Ficha.State.Slower;
+                ficha.StateDuration = 3;
+                ficha.CurrentVelocidad = Math.Max(1, ficha.Velocidad - 2);
+                AnsiConsole.MarkupLine("[red]¡Has sido ralentizado por una telaraña![/]");
+            }
+
             Position nuevaPosicion = new Position(newX, newY);
 
             string trampaTipo = Board.board[newX, newY];
@@ -88,12 +96,13 @@ public class Position
 
             Board.board[lastX, lastY] = "c";
 
-            if (Board.board[newX, newY] == "🕸️")
+            if (trampaTipo == "⚡" || trampaTipo == "🌀")
             {
-                ficha.Estado = Ficha.State.Slower;
-                ficha.StateDuration = 3;
-                ficha.CurrentVelocidad = Math.Max(1, ficha.Velocidad - 2);
-                AnsiConsole.MarkupLine("[red]¡Has sido ralentizado por una telaraña![/]");
+                Board.board[newX, newY] = "c";
+             
+                ficha.Posicion = nuevaPosicion;
+                newX = nuevaPosicion.x;
+                newY = nuevaPosicion.y;
             }
 
             Board.board[newX, newY] = ficha.Simbolo;

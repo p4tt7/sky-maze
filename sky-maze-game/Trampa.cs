@@ -49,7 +49,7 @@ public class Trampa
         {
             for (int j = 0; j < Board.dimension; j++)
             {
-                if (Board.board[i, j] == "c")
+                if (Board.board[i, j] == "c" && !(i == Board.dimension/2 && j == Board.dimension/2))
                 {
                     if (random.NextDouble() < probabilidadTrampa && Trampa.Trampas.Count > 0)
                     {
@@ -135,21 +135,18 @@ public class Trampa
         return new Position(newX, newY);
     }
 
-    
+
 
     public static Position Rayo(Ficha ficha)
-{
-    Player? jugador = Player.jugadores.FirstOrDefault(j => j.selectedFicha == ficha);
-    Position posicionInicial = jugador.PosicionInicial;
-    
-    ficha.Posicion = new Position(posicionInicial.x, posicionInicial.y);
+    {
+        Player? jugador = Player.jugadores.FirstOrDefault(j => j.selectedFicha == ficha);
+        Position posicionInicial = jugador.PosicionInicial;
 
-    
-    AnsiConsole.Markup("[yellow]¡Has sido golpeado por un rayo y vuelves al inicio![/]");
-    System.Threading.Thread.Sleep(2000);
+        AnsiConsole.Markup("[yellow]¡Has sido golpeado por un rayo y vuelves al inicio![/]");
+        System.Threading.Thread.Sleep(2000);
 
-    return posicionInicial;
-}
+        return posicionInicial;
+    }
 
 }
 

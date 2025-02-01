@@ -31,6 +31,7 @@ class Program
                 System.Threading.Thread.Sleep(2000);
                 Console.Clear();
                 GameUI.Presentation();
+                
 
                 while (true)
                 {
@@ -39,7 +40,7 @@ class Program
                     {
                         Console.Clear();
                         Juego();
-                        break;
+                        return;
                     }
                 }
 
@@ -83,17 +84,24 @@ class Program
         InitializeGame();
 
         bool playing = true;
+
         int turno = 0;
 
         while (playing)
         {
             foreach (Player jugador in Player.jugadores)
             {
-                HandlePlayerTurn(jugador);
+                HandlePlayerTurn(jugador, ref playing);
 
                 turno++;
                 Console.Clear();
                 GameUI.PrintBoard();
+
+                if (!playing)
+                {
+                    Console.Clear();
+                    break;
+                }
             }
         }
 
@@ -106,9 +114,11 @@ class Program
         }
 
 
+
+
     }
 
-    public static void HandlePlayerTurn(Player jugador)
+    public static void HandlePlayerTurn(Player jugador, ref bool playing)
     {
         if (jugador.selectedFicha.CurrentCoolingTime > 0)
         {
@@ -132,7 +142,7 @@ class Program
 
             if (teclaPresionada.Key == ConsoleKey.Enter)
             {
-                int steps = jugador.selectedFicha.Velocidad;
+                int steps = jugador.selectedFicha.CurrentVelocidad;
                 while (steps > 0)
                 {
                     if (Position.Movement(jugador.selectedFicha))
@@ -149,7 +159,9 @@ class Program
                             GameUI.WinArt();
                             System.Threading.Thread.Sleep(2000);
                             Console.Clear();
-                            break; ;
+                            playing = false;
+                            playerTurnOver = true;
+                            break;
                         }
                     }
 

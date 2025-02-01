@@ -31,7 +31,7 @@ public class Ficha
         Rainbow,
         Shadow,
         WindVelocity,
-        Fly,
+        CloudPath,
         Star,
         Eclipse,
     }
@@ -44,7 +44,7 @@ public class Ficha
     new Ficha {Nombre = "Arcoiris" , Simbolo = "🌈" , Velocidad = 4 , CoolingTime = 2 , Habilidad = HabilidadType.Rainbow},
     new Ficha {Nombre = "Luna Nueva" , Simbolo = "🌑" , Velocidad = 3 , CoolingTime = 4 , Habilidad = HabilidadType.Shadow},
     new Ficha {Nombre = "Viento" , Simbolo = "🍃" , Velocidad = 2 , CoolingTime = 3 , Habilidad = HabilidadType.WindVelocity},
-    new Ficha {Nombre = "Nube" , Simbolo = "⛅" , Velocidad = 3 , CoolingTime = 5 , Habilidad = HabilidadType.Fly},
+    new Ficha {Nombre = "Nube" , Simbolo = "⛅" , Velocidad = 3 , CoolingTime = 5 , Habilidad = HabilidadType.CloudPath},
     new Ficha {Nombre = "Estrella" , Simbolo = "✨" , Velocidad = 3 , CoolingTime = 4 , Habilidad = HabilidadType.Star},
     new Ficha {Nombre = "Eclipse" , Simbolo = "🌘" , Velocidad = 4 , CoolingTime = 5 , Habilidad = HabilidadType.Eclipse},
     };
@@ -67,7 +67,6 @@ public class Ficha
                 indexPosition++;
             }
             jugador.selectedFicha.CurrentCoolingTime = 0;
-            
 
         }
     }
@@ -77,28 +76,20 @@ public class Ficha
     {
         AnsiConsole.Markup("[green]Ha activado la habilidad\n[/]");
 
-        ficha.Velocidad += 10;
+        ficha.CurrentVelocidad += 10;
 
         Console.WriteLine("Ahora eres diez veces mas rapido.\n");
 
-        Task.Delay(5000).ContinueWith(_ => ficha.Velocidad -= 10);
+        Task.Delay(5000).ContinueWith(_ => ficha.CurrentVelocidad -= 10);
     }
 
 
-    public static void Fly(Ficha ficha)
+    public static void CloudPath(Ficha ficha)
     {
-        AnsiConsole.MarkupLine("[grey]Ha activado la habilidad, ahora puede volar sobre los obstáculos[/]");
+        AnsiConsole.MarkupLine("[grey]Ha activado la habilidad, creando nubes en su camino[/]");
         System.Threading.Thread.Sleep(1500);
 
         int pasos = ficha.Velocidad;
-
-        Dictionary<(int x, int y), string> originalContents = new Dictionary<(int x, int y), string>();
-
-        int startX = ficha.Posicion.x;
-        int startY = ficha.Posicion.y;
-        originalContents[(startX, startY)] = Board.board[startX, startY];
-
-        Board.board[startX, startY] = ficha.Simbolo;
 
         for (int i = 0; i < pasos; i++)
         {
@@ -138,24 +129,10 @@ public class Ficha
                 continue;
             }
 
-
             if (newX >= 0 && newX < Board.dimension && newY >= 0 && newY < Board.dimension)
             {
-                int oldX = ficha.Posicion.x;
-                int oldY = ficha.Posicion.y;
 
-
-                if (originalContents.ContainsKey((oldX, oldY)))
-                {
-                    Board.board[oldX, oldY] = originalContents[(oldX, oldY)];
-                }
-
-
-                if (!originalContents.ContainsKey((newX, newY)))
-                {
-                    originalContents[(newX, newY)] = Board.board[newX, newY];
-                }
-
+                Board.board[ficha.Posicion.x, ficha.Posicion.y] = "⬜";
 
                 ficha.Posicion.x = newX;
                 ficha.Posicion.y = newY;
@@ -171,19 +148,10 @@ public class Ficha
             }
         }
 
-
-        foreach (var pos in originalContents.Keys)
-        {
-            if (pos != (ficha.Posicion.x, ficha.Posicion.y))
-            {
-                Board.board[pos.x, pos.y] = originalContents[pos];
-            }
-
-        }
-
-        AnsiConsole.MarkupLine("[grey]Has terminado de volar.[/]");
+        AnsiConsole.MarkupLine("[grey]Has terminado de crear caminos nubosos.[/]");
         System.Threading.Thread.Sleep(1500);
     }
+
 
 
     public static void Eclipse(Ficha ficha)
@@ -203,8 +171,7 @@ public class Ficha
             if (Player.jugadores.Count == 1)
             {
                 Console.WriteLine("No hay habilidades que copiar.");
-                break;
-
+                return;
             }
         }
 
@@ -218,7 +185,10 @@ public class Ficha
         Ficha fichaSeleccionada = Player.jugadores[indice - 1].selectedFicha!;
         Console.WriteLine($"Has seleccionado la habilidad de {fichaSeleccionada.Nombre}: {fichaSeleccionada.Habilidad}");
 
-        UseHabilidad(fichaSeleccionada);
+        HabilidadType habilidadOriginal = ficha.Habilidad;
+        ficha.Habilidad = fichaSeleccionada.Habilidad;
+        UseHabilidad(ficha);
+        ficha.Habilidad = habilidadOriginal;
     }
 
 
@@ -244,7 +214,7 @@ public class Ficha
         AnsiConsole.MarkupLine("[yellow]Ha activado la habilidad de Star.[/]");
         System.Threading.Thread.Sleep(1500);
 
-        int pasos = ficha.Velocidad;
+        int pasos = ficha.CurrentVelocidad;
         Position originalPosition = new Position(ficha.Posicion.x, ficha.Posicion.y);
 
         for (int i = 0; i < pasos; i++)
@@ -303,6 +273,7 @@ public class Ficha
                 System.Threading.Thread.Sleep(1000);
             }
         }
+        AnsiConsole.MarkupLine("[yellow]La habilidad de Star ha terminado.[/]");
 
         Board.board[originalPosition.x, originalPosition.y] = "c";
     }
@@ -342,8 +313,8 @@ public class Ficha
             case Ficha.HabilidadType.WindVelocity:
                 WindVelocity(ficha);
                 break;
-            case Ficha.HabilidadType.Fly:
-                Fly(ficha);
+            case Ficha.HabilidadType.CloudPath:
+                CloudPath(ficha);
                 break;
             case Ficha.HabilidadType.Star:
                 Star(ficha);
@@ -367,7 +338,7 @@ public class Ficha
             {
                 ficha.Estado = State.Normal;
                 ficha.CurrentVelocidad = ficha.Velocidad;
-                AnsiConsole.MarkupLine("[green]¡Te has descongelado y puedes moverte de nuevo en el proximo turno![/]\n");
+                AnsiConsole.MarkupLine("[green]¡Te has descongelado y puedes moverte de nuevo![/]\n");
                 System.Threading.Thread.Sleep(2000);
             }
         }
@@ -375,11 +346,14 @@ public class Ficha
         else if (ficha.Estado == State.Mojado)
         {
             AnsiConsole.MarkupLine("[blue]Estás mojado, cuidado con resbalar.[/]\n");
-            System.Threading.Thread.Sleep(2000);
+            System.Threading.Thread.Sleep(1000);
 
 
             if (Ficha.rand.Next(0, 2) == 0)
             {
+                AnsiConsole.MarkupLine("[blue]¡Resbalaste por la lluvia y te has movido inesperadamente![/]");
+                System.Threading.Thread.Sleep(2000);
+
                 int[] dx = { 0, 1, 0, -1 };
                 int[] dy = { -1, 0, 1, 0 };
                 int direction = Ficha.rand.Next(0, 4);
@@ -392,9 +366,6 @@ public class Ficha
                     Board.board[ficha.Posicion.x, ficha.Posicion.y] = "c";
                     ficha.Posicion = new Position(newX, newY);
                     Board.board[newX, newY] = ficha.Simbolo;
-
-                    AnsiConsole.MarkupLine("[blue]¡Resbalaste por la lluvia y te has movido inesperadamente![/]");
-                    System.Threading.Thread.Sleep(2000);
                 }
             }
             else
@@ -414,11 +385,11 @@ public class Ficha
         else if (ficha.Estado == State.Slower)
         {
             AnsiConsole.MarkupLine("[grey]¡Estás ralentizado por una telaraña![/]\n");
-            System.Threading.Thread.Sleep(2000);           
+            System.Threading.Thread.Sleep(2000);
 
             if (ficha.Velocidad > 1)
             {
-                ficha.CurrentVelocidad = Math.Max(1, ficha.Velocidad - 2); 
+                ficha.CurrentVelocidad = Math.Max(1, ficha.Velocidad - 2);
             }
 
             ficha.StateDuration--;
@@ -427,7 +398,7 @@ public class Ficha
             {
                 ficha.Estado = State.Normal;
                 ficha.CurrentVelocidad = ficha.Velocidad;
-                
+
                 AnsiConsole.MarkupLine("[green]¡Te has liberado de la telaraña y recuperas tu velocidad![/]\n");
             }
         }
