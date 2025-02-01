@@ -109,7 +109,7 @@ Al seleccionar _PLAY_ ingresando su índice correspondiente _1_, se brindan inst
 
 
 
-**Piercing Cloud:** La nube puede volar sobre las casillas, evitando obstáculos y trampas.
+**Piercing Cloud:** La nube puede crear un camino de obstáculos a su paso, logrando bloquear caminos.
 
 
 
