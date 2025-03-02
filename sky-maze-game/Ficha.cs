@@ -222,6 +222,9 @@ public class Ficha
             GameUI.GameUI.PrintBoard();
             ConsoleKeyInfo teclaPresionada = Console.ReadKey();
 
+            int lastX = ficha.Posicion.x;
+            int lastY = ficha.Posicion.y;
+
             int newX = ficha.Posicion.x;
             int newY = ficha.Posicion.y;
 
@@ -252,20 +255,30 @@ public class Ficha
                 continue;
             }
 
-            if (newX >= 0 && newX < Board.dimension && newY >= 0 && newY < Board.dimension)
+            if (Board.Range(Board.dimension, newX, newY))
             {
-                Board.board[ficha.Posicion.x, ficha.Posicion.y] = "c";
+                Board.board[lastX, lastY] = "c";
 
-                if (Board.board[newX, newY] == "w" || Board.board[newX, newY] == "🕸️")
+                if (Position.IsFicha(newX, newY))
                 {
-                    Board.board[newX, newY] = "c";
+                    string tempSimbolo = Board.board[newX, newY];
+                    Board.board[newX, newY] = ficha.Simbolo;
+                    Board.board[lastX, lastY] = tempSimbolo;
+                    ficha.Posicion.x = newX;
+                    ficha.Posicion.y = newY;
                 }
 
-                ficha.Posicion.x = newX;
-                ficha.Posicion.y = newY;
+                else
+                {
+                    Board.board[newX, newY] = "c"; 
+                    ficha.Posicion.x = newX;
+                    ficha.Posicion.y = newY;
+                    Board.board[newX, newY] = ficha.Simbolo; 
 
-                Board.board[newX, newY] = ficha.Simbolo;
+                }
+
             }
+
             else
             {
                 Console.WriteLine("Movimiento no válido.");

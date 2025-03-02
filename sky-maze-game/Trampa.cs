@@ -102,7 +102,7 @@ public class Trampa
 
     public static void Snowflake(Ficha ficha)
     {
-        AnsiConsole.MarkupLine("[cyan]Estás congelado a partir del proximo turno, no puedras moverte por tres turnos.\n[/]");
+        AnsiConsole.MarkupLine("[cyan]Estás congelado a partir del proximo turno, no podras moverte por tres turnos.\n[/]");
         System.Threading.Thread.Sleep(2000);
         ficha.Estado = Ficha.State.Congelado;
         ficha.StateDuration = 3;
@@ -126,7 +126,7 @@ public class Trampa
         {
             newX = random.Next(0, Board.dimension);
             newY = random.Next(0, Board.dimension);
-        } while (Board.board[newX, newY] != "c" && newX == Board.center && newY == Board.center);
+        } while (Board.board[newX, newY] == "w" || (newX == Board.center && newY == Board.center) || Position.IsFicha(newX, newY));
 
         AnsiConsole.MarkupLine("[magenta]¡Te has teletransportado a otro lugar debido al Skyhole![/]");
         System.Threading.Thread.Sleep(2000);
@@ -155,14 +155,6 @@ public class Trampa
         System.Threading.Thread.Sleep(2000);
 
         return posicionInicial;
-    }
-
-    public static void Slow(Ficha ficha)
-    {
-        ficha.Estado = Ficha.State.Slower;
-        ficha.StateDuration = 3;
-        ficha.CurrentVelocidad = Math.Max(1, ficha.Velocidad - 2);
-        AnsiConsole.MarkupLine("[red]¡Has sido ralentizado por una telaraña![/]");
     }
 
 }

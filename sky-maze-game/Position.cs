@@ -34,7 +34,7 @@ public class Position
 
         if (teclaPresionada.Key == ConsoleKey.W || teclaPresionada.Key == ConsoleKey.UpArrow)
         {
-            if (ficha.Posicion.x > 0 && !IsWall(ficha, ficha.Posicion.x - 1, ficha.Posicion.y) && !IsFicha(ficha.Posicion.x - 1, ficha.Posicion.y))
+            if (ficha.Posicion.x > 0 && !IsWall(ficha, ficha.Posicion.x - 1, ficha.Posicion.y))
             {
                 newX = ficha.Posicion.x - 1;
                 moverse = true;
@@ -42,7 +42,7 @@ public class Position
         }
         else if (teclaPresionada.Key == ConsoleKey.A || teclaPresionada.Key == ConsoleKey.LeftArrow)
         {
-            if (ficha.Posicion.y > 0 && !IsWall(ficha, ficha.Posicion.x, ficha.Posicion.y - 1) && !IsFicha(ficha.Posicion.x, ficha.Posicion.y - 1))
+            if (ficha.Posicion.y > 0 && !IsWall(ficha, ficha.Posicion.x, ficha.Posicion.y - 1))
             {
                 newY = ficha.Posicion.y - 1;
                 moverse = true;
@@ -50,7 +50,7 @@ public class Position
         }
         else if (teclaPresionada.Key == ConsoleKey.S || teclaPresionada.Key == ConsoleKey.DownArrow)
         {
-            if (ficha.Posicion.x < Board.dimension - 1 && !IsWall(ficha, ficha.Posicion.x + 1, ficha.Posicion.y) && !IsFicha(ficha.Posicion.x + 1, ficha.Posicion.y))
+            if (ficha.Posicion.x < Board.dimension - 1 && !IsWall(ficha, ficha.Posicion.x + 1, ficha.Posicion.y))
             {
                 newX = ficha.Posicion.x + 1;
                 moverse = true;
@@ -58,7 +58,7 @@ public class Position
         }
         else if (teclaPresionada.Key == ConsoleKey.D || teclaPresionada.Key == ConsoleKey.RightArrow)
         {
-            if (ficha.Posicion.y < Board.dimension - 1 && !IsWall(ficha, ficha.Posicion.x, ficha.Posicion.y + 1) && !IsFicha(ficha.Posicion.x, ficha.Posicion.y + 1))
+            if (ficha.Posicion.y < Board.dimension - 1 && !IsWall(ficha, ficha.Posicion.x, ficha.Posicion.y + 1))
             {
                 newY = ficha.Posicion.y + 1;
                 moverse = true;
@@ -67,39 +67,65 @@ public class Position
 
         if (moverse)
         {
-            ficha.Posicion.x = newX;
-            ficha.Posicion.y = newY;
-
-            if (Board.board[newX, newY] == "🕸️") { ficha.Estado = Ficha.State.Slower; ficha.StateDuration = 3; ficha.CurrentVelocidad = Math.Max(1, ficha.Velocidad - 2); AnsiConsole.MarkupLine("[red]¡Has sido ralentizado por una telaraña![/]"); }
-
-            Position nuevaPosicion = new Position(newX, newY);
-
-            string trampaTipo = Board.board[newX, newY];
-            if (trampaTipo == "⚡")
+            if (IsFicha(newX, newY))
             {
-                nuevaPosicion = Trampa.Rayo(ficha);
+                Ficha fichaDestino = null;
+                foreach (Player jugador in Player.jugadores)
+                {
+                    if (jugador.selectedFicha.Posicion.x == newX && jugador.selectedFicha.Posicion.y == newY)
+                    {
+                        fichaDestino = jugador.selectedFicha;
+                        break;
+                    }
+                }
+
+                string tempSimbolo = Board.board[newX, newY];
+
+                Board.board[newX, newY] = ficha.Simbolo;
+                Board.board[lastX, lastY] = tempSimbolo;
+
+                fichaDestino.Posicion.x = lastX;
+                fichaDestino.Posicion.y = lastY;
+                ficha.Posicion.x = newX;
+                ficha.Posicion.y = newY;
             }
-            else if (trampaTipo == "🌀")
-            {
-                nuevaPosicion = Trampa.Skyhole(ficha);
-            }
+
             else
             {
-                Trampa.DetectarTrampa(ficha);
+
+                ficha.Posicion.x = newX;
+                ficha.Posicion.y = newY;
+
+                if (Board.board[newX, newY] == "🕸️") { ficha.Estado = Ficha.State.Slower; ficha.StateDuration = 3; ficha.CurrentVelocidad = Math.Max(1, ficha.Velocidad - 2); AnsiConsole.MarkupLine("[red]¡Has sido ralentizado por una telaraña![/]"); }
+
+                Position nuevaPosicion = new Position(newX, newY);
+
+                string trampaTipo = Board.board[newX, newY];
+                if (trampaTipo == "⚡")
+                {
+                    nuevaPosicion = Trampa.Rayo(ficha);
+                }
+                else if (trampaTipo == "🌀")
+                {
+                    nuevaPosicion = Trampa.Skyhole(ficha);
+                }
+                else
+                {
+                    Trampa.DetectarTrampa(ficha);
+                }
+
+                Board.board[lastX, lastY] = "c";
+
+                if (trampaTipo == "⚡" || trampaTipo == "🌀")
+                {
+                    Board.board[ficha.Posicion.x, ficha.Posicion.y] = "c";
+                    ficha.Posicion = nuevaPosicion;
+                    newX = nuevaPosicion.x;
+                    newY = nuevaPosicion.y;
+                }
+
+                Board.board[newX, newY] = ficha.Simbolo;
             }
-
-            Board.board[lastX, lastY] = "c";
-
-            if (trampaTipo == "⚡" || trampaTipo == "🌀")
-            {
-                Board.board[newX, newY] = "c";
-
-                ficha.Posicion = nuevaPosicion;
-                newX = nuevaPosicion.x;
-                newY = nuevaPosicion.y;
-            }
-
-            Board.board[newX, newY] = ficha.Simbolo;
 
             return true;
         }
