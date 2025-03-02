@@ -24,6 +24,7 @@ public class Ficha
         Mojado,
         Congelado,
         Slower,
+        Faster
     }
 
     public enum HabilidadType
@@ -51,23 +52,19 @@ public class Ficha
 
     public static void FichaInitializer(List<Player> jugadores)
     {
-        int indexPosition = 0;
-
-        foreach (Player jugador in jugadores)
+        for (int indexPosition = 0; indexPosition < jugadores.Count; indexPosition++)
         {
+            Player jugador = jugadores[indexPosition];
+
             if (jugador.selectedFicha != null)
             {
                 Position pos = Position.InitialPositionFichas[indexPosition];
-                jugador.Index = indexPosition;
                 jugador.PosicionInicial = new Position(pos.x, pos.y);
                 Board.board[pos.x, pos.y] = jugador.selectedFicha.Simbolo;
                 jugador.selectedFicha.Posicion = new Position(pos.x, pos.y);
                 jugador.selectedFicha.CurrentVelocidad = jugador.selectedFicha.Velocidad;
-
-                indexPosition++;
             }
             jugador.selectedFicha.CurrentCoolingTime = 0;
-
         }
     }
 
@@ -76,11 +73,12 @@ public class Ficha
     {
         AnsiConsole.Markup("[green]Ha activado la habilidad\n[/]");
 
-        ficha.CurrentVelocidad += 10;
+        ficha.CurrentVelocidad = 10;
 
         Console.WriteLine("Ahora eres diez veces mas rapido.\n");
 
-        Task.Delay(5000).ContinueWith(_ => ficha.CurrentVelocidad -= 10);
+        ficha.Estado = State.Faster;
+
     }
 
 
@@ -201,6 +199,7 @@ public class Ficha
         if (ficha.Estado != State.Normal)
         {
             ficha.Estado = State.Normal;
+            ficha.CurrentVelocidad = ficha.Velocidad;
             Console.WriteLine("Te has curado de todos los efectos de trampas.");
         }
         else

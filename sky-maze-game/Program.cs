@@ -2,6 +2,7 @@
 using sky_maze_game.GameLogic;
 using Spectre.Console;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 
 class Program
 {
@@ -186,6 +187,10 @@ class Program
             }
         }
 
+        if(jugador.selectedFicha.Estado == Ficha.State.Faster){
+            jugador.selectedFicha.CurrentVelocidad = jugador.selectedFicha.Velocidad;
+            jugador.selectedFicha.Estado = Ficha.State.Normal;
+        }
     }
 
 

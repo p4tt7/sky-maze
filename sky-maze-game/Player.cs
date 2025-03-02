@@ -7,7 +7,6 @@ public class Player
 
     public Ficha? selectedFicha { get; set; }
     public static List<Player> jugadores = new List<Player>();
-    public int Index { get; set; }
 
     public Player(string nombre, Position posicion)
     {
@@ -22,9 +21,6 @@ public class Player
     new Position(Board.dimension - 1, 0),
     new Position(Board.dimension - 1, Board.dimension - 1)
     };
-
-
-
 
 }
 

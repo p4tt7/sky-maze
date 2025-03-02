@@ -62,7 +62,7 @@ public class GameUI
         AnsiConsole.MarkupLine("[cyan]  - Arcoiris (🌈): Se reestablece de cualquier estado impuesto por una trampa.[/]");
         AnsiConsole.MarkupLine("[cyan]  - Luna Nueva (🌑): Genera casillas aleatorias sobre el tablero que desaceleran a quien las toque[/]");
         AnsiConsole.MarkupLine("[cyan]  - Viento (🍃): Es capaz de aumentar diez veces su velocidad[/]");
-        AnsiConsole.MarkupLine("[cyan]  - Nube (⛅): Cuando activada, vuela por encima de obstaculos y trampas[/]");
+        AnsiConsole.MarkupLine("[cyan]  - Nube (⛅): Cuando activada, crea un camino de nubes (obstaculos)[/]");
         AnsiConsole.MarkupLine("[cyan]  - Estrella (✨): Rompe obstaculos y trampas, es inmune.[/]");
         AnsiConsole.MarkupLine("[cyan]  - Eclipse (🌘): Puede copiar la habilidad de cualquier ficha sobre el campo[/]\n");
 

@@ -6,6 +6,9 @@ public class Trampa
 {
     public static Random random = new Random();
     public string? Nombre { get; set; }
+
+    public HabilidadType Habilidad { get; set; }
+
     public string? Simbolo { get; set; }
 
     public enum HabilidadType
@@ -17,13 +20,12 @@ public class Trampa
 
     }
 
-    public HabilidadType Habilidad { get; set; }
 
     public static List<Trampa> Trampas = new List<Trampa>{
     new Trampa {Nombre = "Copo de Nieve" , Simbolo = "⛄" , Habilidad = HabilidadType.Copo},
     new Trampa {Nombre = "LLuvia" , Simbolo = "☔" , Habilidad = HabilidadType.Lluvia},
     new Trampa {Nombre = "Rayo" , Simbolo = "⚡" , Habilidad = HabilidadType.Rayo},
-    new Trampa {Nombre = "Skyhole" , Simbolo = "🌀" , Habilidad = HabilidadType.Agujero}
+    new Trampa {Nombre = "Skyhole" , Simbolo = "🌀" , Habilidad = HabilidadType.Agujero},
     };
 
 
@@ -49,9 +51,9 @@ public class Trampa
         {
             for (int j = 0; j < Board.dimension; j++)
             {
-                if (Board.board[i, j] == "c" && !(i == Board.dimension/2 && j == Board.dimension/2))
+                if (Board.board[i, j] == "c" && !(i == Board.dimension / 2 && j == Board.dimension / 2))
                 {
-                    if (random.NextDouble() < probabilidadTrampa && Trampa.Trampas.Count > 0)
+                    if (random.NextDouble() < probabilidadTrampa)
                     {
                         int indexTrampa = Trampa.random.Next(0, Trampa.Trampas.Count);
                         Board.board[i, j] = Trampa.Trampas[indexTrampa].Simbolo;
@@ -98,12 +100,9 @@ public class Trampa
         Board.board[trapX, trapY] = "c";
     }
 
-
-
-
     public static void Snowflake(Ficha ficha)
     {
-        AnsiConsole.MarkupLine("[cyan]Estás congelado, no puedes moverte por tres turnos.\n[/]");
+        AnsiConsole.MarkupLine("[cyan]Estás congelado a partir del proximo turno, no puedras moverte por tres turnos.\n[/]");
         System.Threading.Thread.Sleep(2000);
         ficha.Estado = Ficha.State.Congelado;
         ficha.StateDuration = 3;
@@ -127,7 +126,7 @@ public class Trampa
         {
             newX = random.Next(0, Board.dimension);
             newY = random.Next(0, Board.dimension);
-        } while (Board.board[newX, newY] != "c");
+        } while (Board.board[newX, newY] != "c" && newX == Board.center && newY == Board.center);
 
         AnsiConsole.MarkupLine("[magenta]¡Te has teletransportado a otro lugar debido al Skyhole![/]");
         System.Threading.Thread.Sleep(2000);
@@ -139,26 +138,31 @@ public class Trampa
 
     public static Position Rayo(Ficha ficha)
     {
-        Player? jugador = Player.jugadores.FirstOrDefault(j => j.selectedFicha == ficha);
+        Player? jugador = null;
+
+        foreach (Player j in Player.jugadores)
+        {
+            if (j.selectedFicha == ficha)
+            {
+                jugador = j;
+                break;
+            }
+        }
+
         Position posicionInicial = jugador.PosicionInicial;
 
-        AnsiConsole.Markup("[yellow]¡Has sido golpeado por un rayo y vuelves al inicio![/]");
+        AnsiConsole.MarkupLine("[yellow]¡Has sido golpeado por un rayo y vuelves al inicio![/]");
         System.Threading.Thread.Sleep(2000);
 
         return posicionInicial;
     }
 
+    public static void Slow(Ficha ficha)
+    {
+        ficha.Estado = Ficha.State.Slower;
+        ficha.StateDuration = 3;
+        ficha.CurrentVelocidad = Math.Max(1, ficha.Velocidad - 2);
+        AnsiConsole.MarkupLine("[red]¡Has sido ralentizado por una telaraña![/]");
+    }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -21,16 +21,23 @@ public class GameLogic
 
         AnsiConsole.Write(new Align(panel, HorizontalAlignment.Center));
 
+        //Seleccion de cantidad de Jugadores
 
-        AnsiConsole.MarkupLine("[bold cyan]Introduzca la cantidad de jugadores (1-4):[/]");
-        if (!int.TryParse(Console.ReadLine(), out int cant_jugadores) || cant_jugadores < 1 || cant_jugadores > 4)
+        int cant_jugadores;
+        while (true)
         {
-            AnsiConsole.MarkupLine("[bold red]Entrada inválida. Debe ser un número entre 1 y 4.[/]");
+            AnsiConsole.MarkupLine("[bold cyan]Introduzca la cantidad de jugadores (1-4):[/]");
+            if (int.TryParse(Console.ReadLine(), out cant_jugadores) || cant_jugadores >= 1 || cant_jugadores <= 4)
+            {
+                break;
+            }
+            AnsiConsole.MarkupLine("[red]Entrada invalida. Solo pueden haber de 1 a 4 jugadores.[/]");
+
             System.Threading.Thread.Sleep(2000);
             Console.Clear();
-            SelectionMenu();
-            return;
         }
+
+        //Introduccion de nombres de jugadores
 
         for (int i = 0; i < cant_jugadores; i++)
         {
@@ -56,7 +63,7 @@ public class GameLogic
 
         List<Ficha> FichasDisponibles = new List<Ficha>(Ficha.FichasDisponibles);
 
-        // fichas
+        // Eleccion de fichas
         foreach (Player jugador in Player.jugadores)
         {
 
@@ -99,7 +106,8 @@ public class GameLogic
         System.Threading.Thread.Sleep(2000);
         Console.Clear();
 
-        //nivel de dificultad
+
+        //Nivel de Dificultad
         AnsiConsole.Markup($"[cyan]Ingrese el nivel de dificultad por su indice correspondiente:\n[/]");
         Console.WriteLine("1- Facil\n2- Normal\n3- Dificil\n");
 
@@ -117,6 +125,7 @@ public class GameLogic
 
             AnsiConsole.MarkupLine("[red]Opción no válida, intenta de nuevo.[/]");
         }
+        
         switch (dificultad)
         {
             case 1:
