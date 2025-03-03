@@ -97,15 +97,6 @@ class Program
                 GameUI.PrintBoard();
 
             }
-
-
-            foreach (Player jugador in Player.jugadores)
-            {
-                if (jugador.selectedFicha.CurrentCoolingTime > 0)
-                {
-                    jugador.selectedFicha.CurrentCoolingTime--;
-                }
-            }
         }
     }
 
