@@ -27,7 +27,7 @@ public class GameLogic
         while (true)
         {
             AnsiConsole.MarkupLine("[bold cyan]Introduzca la cantidad de jugadores (1-4):[/]");
-            if (int.TryParse(Console.ReadLine(), out cant_jugadores) || cant_jugadores >= 1 || cant_jugadores <= 4)
+            if (int.TryParse(Console.ReadLine(), out cant_jugadores) && cant_jugadores >= 1 && cant_jugadores <= 4)
             {
                 break;
             }
@@ -64,6 +64,7 @@ public class GameLogic
         List<Ficha> FichasDisponibles = new List<Ficha>(Ficha.FichasDisponibles);
 
         // Eleccion de fichas
+
         foreach (Player jugador in Player.jugadores)
         {
 
@@ -108,6 +109,7 @@ public class GameLogic
 
 
         //Nivel de Dificultad
+
         AnsiConsole.Markup($"[cyan]Ingrese el nivel de dificultad por su indice correspondiente:\n[/]");
         Console.WriteLine("1- Facil\n2- Normal\n3- Dificil\n");
 

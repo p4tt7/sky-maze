@@ -175,6 +175,7 @@ public class Ficha
 
 
         int indice;
+        
         while (!int.TryParse(Console.ReadLine(), out indice) || indice < 1 || indice >= index)
         {
             Console.WriteLine("Selección no válida. Por favor, intenta de nuevo.");

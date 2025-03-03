@@ -19,7 +19,7 @@ class Program
         while (true)
         {
             string? state = Console.ReadLine();
-            if (string.IsNullOrEmpty(state) || (state != "1" && state != "0"))
+            if (state != "1" && state != "0")
             {
                 Console.WriteLine("Entrada no válida. Por favor, introduce 1 para jugar o 0 para salir.");
                 continue;
@@ -32,7 +32,7 @@ class Program
                 System.Threading.Thread.Sleep(2000);
                 Console.Clear();
                 GameUI.Presentation();
-                
+
 
                 while (true)
                 {
@@ -84,113 +84,109 @@ class Program
     {
         InitializeGame();
 
-        bool playing = true;
-
         int turno = 0;
 
-        while (playing)
+        while (true)
         {
             foreach (Player jugador in Player.jugadores)
             {
-                HandlePlayerTurn(jugador, ref playing);
+                if (HandlePlayerTurn(jugador))
+                {
+                    return;
+                }
 
                 turno++;
                 Console.Clear();
                 GameUI.PrintBoard();
 
-                if (!playing)
+            }
+
+
+            foreach (Player jugador in Player.jugadores)
+            {
+                if (jugador.selectedFicha.CurrentCoolingTime > 0)
                 {
-                    Console.Clear();
-                    break;
+                    jugador.selectedFicha.CurrentCoolingTime--;
                 }
             }
         }
+    }
 
-        foreach (Player jugador in Player.jugadores)
+    public static bool HandlePlayerTurn(Player jugador)
+    {
         {
             if (jugador.selectedFicha.CurrentCoolingTime > 0)
             {
                 jugador.selectedFicha.CurrentCoolingTime--;
             }
-        }
 
-
-
-
-    }
-
-    public static void HandlePlayerTurn(Player jugador, ref bool playing)
-    {
-        if (jugador.selectedFicha.CurrentCoolingTime > 0)
-        {
-            jugador.selectedFicha.CurrentCoolingTime--;
-        }
-
-        if (!isSolitaire)
-        {
-            AnsiConsole.MarkupLine($"[cyan]Jugador {jugador.Nombre}, es tu turno[/]");
-        }
-
-        AnsiConsole.MarkupLine($"[cyan]Presione ENTER para moverse o X para usar su habilidad[/]");
-
-        Ficha.ApplyTrapEffects(jugador.selectedFicha);
-
-        bool playerTurnOver = false;
-
-        while (!playerTurnOver)
-        {
-            ConsoleKeyInfo teclaPresionada = Console.ReadKey(true);
-
-            if (teclaPresionada.Key == ConsoleKey.Enter)
+            if (!isSolitaire)
             {
-                int steps = jugador.selectedFicha.CurrentVelocidad;
-                while (steps > 0)
-                {
-                    if (Position.Movement(jugador.selectedFicha))
-                    {
-                        steps--;
-                        FichaInfo(jugador.selectedFicha, steps, jugador.selectedFicha.CurrentCoolingTime);
-                        System.Threading.Thread.Sleep(1000);
+                AnsiConsole.MarkupLine($"[cyan]Jugador {jugador.Nombre}, es tu turno[/]");
+            }
 
-                        if (Position.IsWinning())
+            AnsiConsole.MarkupLine($"[cyan]Presione ENTER para moverse o X para usar su habilidad[/]");
+
+            Ficha.ApplyTrapEffects(jugador.selectedFicha);
+
+            bool playerTurnOver = false;
+
+            while (!playerTurnOver)
+            {
+                ConsoleKeyInfo teclaPresionada = Console.ReadKey(true);
+
+                if (teclaPresionada.Key == ConsoleKey.Enter)
+                {
+                    int steps = jugador.selectedFicha.CurrentVelocidad;
+                    while (steps > 0)
+                    {
+                        if (Position.Movement(jugador.selectedFicha))
                         {
-                            AnsiConsole.MarkupLine($"[green]¡Felicidades, {jugador.Nombre} ha ganado![/]");
-                            System.Threading.Thread.Sleep(2000);
-                            Console.Clear();
-                            GameUI.WinArt();
-                            System.Threading.Thread.Sleep(2000);
-                            Console.Clear();
-                            playing = false;
-                            playerTurnOver = true;
-                            break;
+                            steps--;
+                            FichaInfo(jugador.selectedFicha, steps, jugador.selectedFicha.CurrentCoolingTime);
+                            System.Threading.Thread.Sleep(1000);
+
+                            if (Position.IsWinning())
+                            {
+                                AnsiConsole.MarkupLine($"[green]¡Felicidades, {jugador.Nombre} ha ganado![/]");
+                                System.Threading.Thread.Sleep(2000);
+                                Console.Clear();
+                                GameUI.WinArt();
+                                System.Threading.Thread.Sleep(2000);
+                                Console.Clear();
+                                return true;
+
+                            }
                         }
-                    }
 
-                    else
-                    {
-                        continue;
-                    }
+                        else
+                        {
+                            continue;
+                        }
 
+                    }
+                    playerTurnOver = true;
                 }
-                playerTurnOver = true;
-            }
-            else if (teclaPresionada.Key == ConsoleKey.X)
-            {
-                bool abilityUsed = HandleAbility(jugador);
-
-                if (!abilityUsed)
+                else if (teclaPresionada.Key == ConsoleKey.X)
                 {
-                    AnsiConsole.MarkupLine("[cyan]No puedes usar la habilidad, pero puedes moverte![/]");
+                    bool abilityUsed = HandleAbility(jugador);
+
+                    if (!abilityUsed)
+                    {
+                        AnsiConsole.MarkupLine("[cyan]No puedes usar la habilidad, pero puedes moverte![/]");
+                    }
+
                 }
+            }
 
-
+            if (jugador.selectedFicha.Estado == Ficha.State.Faster)
+            {
+                jugador.selectedFicha.CurrentVelocidad = jugador.selectedFicha.Velocidad;
+                jugador.selectedFicha.Estado = Ficha.State.Normal;
             }
         }
+        return false;
 
-        if(jugador.selectedFicha.Estado == Ficha.State.Faster){
-            jugador.selectedFicha.CurrentVelocidad = jugador.selectedFicha.Velocidad;
-            jugador.selectedFicha.Estado = Ficha.State.Normal;
-        }
     }
 
 
