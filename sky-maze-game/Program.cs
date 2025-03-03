@@ -84,8 +84,6 @@ class Program
     {
         InitializeGame();
 
-        int turno = 0;
-
         while (true)
         {
             foreach (Player jugador in Player.jugadores)
@@ -95,7 +93,6 @@ class Program
                     return;
                 }
 
-                turno++;
                 Console.Clear();
                 GameUI.PrintBoard();
 
